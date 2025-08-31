@@ -118,7 +118,7 @@ public class Playing extends State implements Statemethods{
             if(e.getButton() == MouseEvent.BUTTON1){
                 player.setAttacking(true);
             }else if(e.getButton() == MouseEvent.BUTTON3){
-                player.powerAttack();
+                player.powerAttack(e);
             }
         }
     }

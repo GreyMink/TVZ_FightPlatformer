@@ -5,9 +5,9 @@ import main.Game;
 import utils.LoadSave;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static utils.Constants.GRAVITY;
 import static utils.Constants.ImageConstants.*;
@@ -64,11 +64,10 @@ public class Player extends Entity{
 
     private int flipX = 0;
 
-    public int getFlipW() {
-        return flipW;
-    }
+
 
     private int flipW = 1;
+    private MouseEvent lastMouseEvent;
 
     private boolean attackChecked = false;
     private boolean dashActiveCheck = false;
@@ -498,8 +497,9 @@ public class Player extends Entity{
     public void setJump(boolean jump) {this.jump = jump;}
     //endregion
 
-    public void powerAttack() {
+    public void powerAttack(MouseEvent e) {
             projectileAttack = true;
+            lastMouseEvent = e;
         }
 
     public boolean getProjectileAttack() {
@@ -508,5 +508,11 @@ public class Player extends Entity{
 
     public void setProjectileAttack(boolean projectileAttack) {
         this.projectileAttack = projectileAttack;
+    }
+    public int getFlipW() {
+        return flipW;
+    }
+    public MouseEvent getLastMouseEvent() {
+        return lastMouseEvent;
     }
 }

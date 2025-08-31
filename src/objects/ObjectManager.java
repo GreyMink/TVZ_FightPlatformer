@@ -85,7 +85,7 @@ public class ObjectManager {
     private void shootProjectile(Player player){
         int directionX = player.getFlipW();
 
-        projectiles.add(new Projectile((int)player.getHitBox().x, (int)player.getHitBox().y, directionX));
+        projectiles.add(new Projectile((int)player.getHitBox().x, (int)player.getHitBox().y, player.getLastMouseEvent().getX(),player.getLastMouseEvent().getY()));
     }
 
     public void update(int[][] lvlData, Player player){
