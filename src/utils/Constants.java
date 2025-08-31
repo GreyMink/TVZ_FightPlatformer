@@ -16,7 +16,7 @@ public class Constants {
         public static final int CANNONBALL_WIDTH = (int)(CANNONBALL_DEFAULT_WIDTH * Game.SCALE);
         public static final int CANNONBALL_HEIGHT = (int)(CANNONBALL_DEFAULT_HEIGHT * Game.SCALE);
 
-        public static final float projectileSpeed = 0.5f * Game.SCALE;
+        public static final float PROJECTILE_SPEED = 0.8f * Game.SCALE;
 
     }
 

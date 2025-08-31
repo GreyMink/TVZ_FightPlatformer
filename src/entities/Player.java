@@ -20,14 +20,17 @@ public class Player extends Entity{
     private BufferedImage[][] animations;
     private int aniTick, aniIndex, aniSpeed = 15;
     private int playerAction = IDLE;
-    private boolean moving = false, attacking =false;
+    private boolean moving = false;
+    private boolean attacking = false;
+    private boolean projectileAttack = false;
+
     private boolean left, up, right, down, jump;
     private float playerSpeed = Game.SCALE;
     private int[][] lvlData;
     private float xDrawOffset = 21 * Game.SCALE;
     private float yDrawOffset = 4 * Game.SCALE;
 
-    private AtomicBoolean invincibility = new AtomicBoolean(false);
+    private Boolean invincibility = false;
     //endregion
 
     //region Gravity
@@ -60,6 +63,11 @@ public class Player extends Entity{
     private Rectangle2D.Float attackBox;
 
     private int flipX = 0;
+
+    public int getFlipW() {
+        return flipW;
+    }
+
     private int flipW = 1;
 
     private boolean attackChecked = false;
@@ -89,6 +97,20 @@ public class Player extends Entity{
         attackBox = new Rectangle2D.Float(x,y,(int)(20 * Game.SCALE), (int)(20 * Game.SCALE));
     }
 
+    private void checkTrapCollision() {
+        playing.checkTrapCollision(this);
+    }
+
+    private void checkAttack() {
+        if(attackChecked || aniIndex != 1){
+            return;
+        }
+        attackChecked = true;
+        playing.checkEnemyHit(attackBox);
+        playing.checkObjectHit(attackBox);
+    }
+
+    //region Updates
     public void update() {
         updateHealthBar();
 
@@ -118,19 +140,6 @@ public class Player extends Entity{
         updateAnimationTick();
         setAnimation();
 
-    }
-
-    private void checkTrapCollision() {
-        playing.checkTrapCollision(this);
-    }
-
-    private void checkAttack() {
-        if(attackChecked || aniIndex != 1){
-            return;
-        }
-        attackChecked = true;
-        playing.checkEnemyHit(attackBox);
-        playing.checkObjectHit(attackBox);
     }
 
     private void updateAttackBox() {
@@ -266,6 +275,8 @@ public class Player extends Entity{
         }
     }
 
+    //endregion
+
     public void render(Graphics g){
 
         g.drawImage(animations[playerAction][aniIndex], (int)(hitBox.x - xDrawOffset + flipX), (int)(hitBox.y - yDrawOffset), width * flipW, height, null);
@@ -289,7 +300,7 @@ public class Player extends Entity{
 
         //Fonts
         g.setFont(g.getFont().deriveFont(30f));
-        g.drawString("%",statusBarX ,statusBarY );
+        g.drawString(healthPercent + "%",statusBarX + statusBarWidth/4,statusBarY + statusBarHeight/4);
         //g.dispose();
     }
 
@@ -307,6 +318,14 @@ public class Player extends Entity{
         //endregion
 
         healthPercent -= value;
+        if(healthPercent >= 200){
+            healthPercent = 200;
+        }
+
+    }
+
+    public void knockBack(int damage){
+
     }
 
     private void setAnimation() {
@@ -359,12 +378,21 @@ public class Player extends Entity{
         aniIndex = 0;
     }
 
-    private void jump() {
-        if(inAir) {
-            return;
+    public void resetAll() {
+        resetDirBooleans();
+        inAir = false;
+        attacking =false;
+        moving = false;
+        jump = false;
+        knockedOut = false;
+        playerAction = IDLE;
+        currentHealth = maxHealth;
+        healthPercent = 0;
+        hitBox.x = x;
+        hitBox.y = y;
+        if(!IsEntityOnFloor(hitBox, lvlData, this)){
+            inAir = true;
         }
-        inAir = true;
-        airSpeed = jumpSpeed;
     }
 
     private void resetInAir() {
@@ -372,7 +400,6 @@ public class Player extends Entity{
         dashActiveCheck = false;
         airSpeed = 0;
     }
-
 
     private void loadAnimations() {
 
@@ -393,32 +420,6 @@ public class Player extends Entity{
             inAir = true;
     }
 
-    public void resetAll() {
-        resetDirBooleans();
-        inAir = false;
-        attacking =false;
-        moving = false;
-        jump = false;
-        knockedOut = false;
-        playerAction = IDLE;
-        currentHealth = maxHealth;
-        hitBox.x = x;
-        hitBox.y = y;
-        if(!IsEntityOnFloor(hitBox, lvlData, this)){
-            inAir = true;
-        }
-    }
-
-    public void dashMove(){
-        if(dashActiveCheck){
-            return;
-        }
-        if(!dashUsedCheck){
-            dashActiveCheck = true;
-        }
-
-    }
-
     public void setAttacking(boolean attacking){
         this.attacking=attacking;
     }
@@ -431,12 +432,35 @@ public class Player extends Entity{
         this.dashActiveCheck = dashActiveCheck;
     }
 
+    public Boolean getInvincibility() {return invincibility;}
+
+    public void setInvincibility(Boolean invincibility) {
+        this.invincibility = invincibility;
+    }
+
     //region Movement
     public void resetDirBooleans(){
         left=false;
         right=false;
         up=false;
         down=false;
+    }
+    private void jump() {
+        if(inAir) {
+            return;
+        }
+        inAir = true;
+        airSpeed = jumpSpeed;
+    }
+
+    public void dashMove(){
+        if(dashActiveCheck){
+            return;
+        }
+        if(!dashUsedCheck){
+            dashActiveCheck = true;
+        }
+
     }
 
     public boolean isUp() {
@@ -472,6 +496,17 @@ public class Player extends Entity{
     }
 
     public void setJump(boolean jump) {this.jump = jump;}
-
     //endregion
+
+    public void powerAttack() {
+            projectileAttack = true;
+        }
+
+    public boolean getProjectileAttack() {
+        return projectileAttack;
+    }
+
+    public void setProjectileAttack(boolean projectileAttack) {
+        this.projectileAttack = projectileAttack;
+    }
 }

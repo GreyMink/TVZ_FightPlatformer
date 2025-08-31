@@ -70,7 +70,7 @@ public class Playing extends State implements Statemethods{
         }else if(!gameOver){
             levelManager.update();
             player.update();
-            objectManager.update();
+            objectManager.update(levelManager.getCurrentLevel().getLvlData(), player);
         }
     }
 
@@ -89,9 +89,6 @@ public class Playing extends State implements Statemethods{
         }else if(matchEnd){
             matchFinishedOverlay.draw(g);
         }
-
-
-
     }
 
     public void resetAll(){
@@ -120,6 +117,8 @@ public class Playing extends State implements Statemethods{
         if(!gameOver){
             if(e.getButton() == MouseEvent.BUTTON1){
                 player.setAttacking(true);
+            }else if(e.getButton() == MouseEvent.BUTTON3){
+                player.powerAttack();
             }
         }
     }
