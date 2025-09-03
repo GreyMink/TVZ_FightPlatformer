@@ -1,8 +1,10 @@
 package gamestates;
 
 import main.Game;
+import ui.BasicButton;
 import ui.MenuButton;
 import ui.SelectButton;
+import ui.ServerButton;
 
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ public class State {
         return game;
     }
 
+
     public boolean isIn(MouseEvent e, MenuButton menuButton){
         return menuButton.getBounds().contains(e.getX(), e.getY());
     }
@@ -25,6 +28,10 @@ public class State {
     public boolean isIn(MouseEvent e, SelectButton selectButton){
         return selectButton.getBounds().contains(e.getX(),e.getY());
     }
+    public boolean isIn(MouseEvent e, ServerButton serverButton){
+        return serverButton.getBounds().contains(e.getX(),e.getY());
+    }
+
 
     public boolean isIn(MouseEvent e, ArrayList<SelectButton> selectButtons){
         for(SelectButton selectButton : selectButtons){

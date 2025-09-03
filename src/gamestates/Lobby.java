@@ -81,8 +81,8 @@ public class Lobby extends State implements Statemethods{
 
 //        menuWidth = (int)(backgroundImg.getWidth() * Game.SCALE);
 //        menuHeight = (int)(backgroundImg.getHeight() * Game.SCALE);
-        menuX = Game.GAME_WIDTH / 2 - menuWidth / 2;
-        menuY = (int) (45 * Game.SCALE);
+//        menuX = Game.GAME_WIDTH / 2 - menuWidth / 2;
+//        menuY = (int) (45 * Game.SCALE);
     }
 
     private void loadButtons() {
@@ -180,8 +180,6 @@ public class Lobby extends State implements Statemethods{
                     stageIndex = stagesButton.getSelectIndex();
                     game.getPlaying().getLevelManager().setStageIndex(stageIndex);
                     stagesButton.setMousePressed(true);
-
-
                 }
 
             }

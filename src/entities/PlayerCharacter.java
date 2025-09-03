@@ -18,7 +18,7 @@ public enum PlayerCharacter {
             PLAYER_SOLDIER,7,8,100,100,
             12,18,
             44,37,
-            SOLDIER_SELECT),;
+            SOLDIER_SELECT);
 
     int spriteA_IDLE, spriteA_RUNNING, spriteA_JUMP, spriteA_FALLING, spriteA_ATTACK, spriteA_HIT, spriteA_DEAD, spriteA_DASH;
     int rowIDLE,rowRUNNING, rowJUMP, rowFALLING, rowATTACK, rowHIT, rowDEAD, rowDASH;

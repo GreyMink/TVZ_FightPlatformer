@@ -2,7 +2,7 @@ package gamestates;
 
 import main.Game;
 import ui.AudioOptions;
-import ui.PauseButton;
+import ui.BasicButton;
 import ui.UrmButton;
 import utils.LoadSave;
 
@@ -62,8 +62,8 @@ public class GameOptions extends State implements Statemethods {
 
 
     //region Input
-    private boolean isIn(MouseEvent e, PauseButton pauseButton){
-        return pauseButton.getBounds().contains(e.getX(),e.getY());
+    private boolean isIn(MouseEvent e, BasicButton basicButton){
+        return basicButton.getBounds().contains(e.getX(),e.getY());
     }
 
     @Override

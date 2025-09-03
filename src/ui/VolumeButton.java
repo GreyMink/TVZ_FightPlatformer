@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 import static utils.Constants.UI.VolumeButtons.*;
 
-public class VolumeButton extends PauseButton implements UImethods{
+public class VolumeButton extends BasicButton implements UImethods{
 
     private BufferedImage[] imgs;
     private BufferedImage slider;

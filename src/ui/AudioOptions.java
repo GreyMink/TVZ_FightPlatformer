@@ -1,6 +1,5 @@
 package ui;
 
-import gamestates.Gamestate;
 import main.Game;
 
 import java.awt.*;
@@ -94,7 +93,7 @@ public class AudioOptions {
     }
 
     //endregion
-    private boolean isIn(MouseEvent e, PauseButton pauseButton){
-        return pauseButton.getBounds().contains(e.getX(),e.getY());
+    private boolean isIn(MouseEvent e, BasicButton basicButton){
+        return basicButton.getBounds().contains(e.getX(),e.getY());
     }
 }

@@ -10,7 +10,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import static utils.Constants.GRAVITY;
-import static utils.Constants.ImageConstants.*;
 import static utils.Constants.PlayerConstants.*;
 import static utils.HelpMethods.*;
 

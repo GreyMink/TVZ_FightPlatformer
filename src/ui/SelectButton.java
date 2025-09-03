@@ -1,10 +1,9 @@
 package ui;
 
 import java.awt.*;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-public class SelectButton extends PauseButton implements UImethods{
+public class SelectButton extends BasicButton implements UImethods{
 
     private BufferedImage buttonImg;
     private BufferedImage buttonContentImg;
@@ -21,16 +20,6 @@ public class SelectButton extends PauseButton implements UImethods{
 
         loadButtonImgs();
     }
-
-    //temp za unutarnje slike
-    public SelectButton(int x, int y, int width, int height, int selectIndex) {
-        super(x, y, width, height);
-        this.selectIndex = selectIndex;
-
-        loadButtonImgs();
-    }
-
-
 
     @Override
     public void update() {
@@ -71,10 +60,6 @@ public class SelectButton extends PauseButton implements UImethods{
 
     public void reset(){
         mousePressed = false;
-    }
-
-    private boolean isIn(MouseEvent e, SelectButton selectButton){
-        return selectButton.getBounds().contains(e.getX(),e.getY());
     }
 
     //region Getters & Setters

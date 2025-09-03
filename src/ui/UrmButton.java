@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import static utils.Constants.UI.URMButtons.*;
 
-public class UrmButton extends PauseButton implements UImethods{
+public class UrmButton extends BasicButton implements UImethods{
 
     private BufferedImage[] imgs;
     private int rowIndex, index;

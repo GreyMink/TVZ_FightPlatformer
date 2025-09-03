@@ -3,6 +3,7 @@ package main;
 import audio.AudioPlayer;
 import gamestates.*;
 import gamestates.Menu;
+import network.Server;
 import ui.AudioOptions;
 import utils.LoadSave;
 
@@ -21,6 +22,7 @@ public class Game implements Runnable{
     private GameOptions gameOptions;
     private AudioOptions audioOptions;
     private Lobby lobby;
+    private ServerSelect serverSelect;
     private AudioPlayer audioPlayer;
 
     public static final int TILES_DEFAULT_SIZE = 32;
@@ -32,8 +34,6 @@ public class Game implements Runnable{
     public static final int GAME_HEIGHT = TILES_SIZE * TILES_IN_HEIGHT;
 
     public Game() {
-
-
         initClasses();
         gamePanel = new GamePanel(this);
         gameWindow = new GameWindow(gamePanel);
@@ -48,6 +48,7 @@ public class Game implements Runnable{
         menu = new Menu(this);
         playing = new Playing(this);
         lobby = new Lobby(this);
+        serverSelect = new ServerSelect(this);
         gameOptions = new GameOptions(this);
     }
 
@@ -62,6 +63,7 @@ public class Game implements Runnable{
             case PLAYING -> playing.update();
             case SELECT_LOBBY ->  lobby.update();
             case OPTIONS -> gameOptions.update();
+            case SERVER_SELECT -> serverSelect.update();
             case QUIT -> System.exit(0);
         }
     }
@@ -71,6 +73,7 @@ public class Game implements Runnable{
             case MENU -> menu.draw(g);
             case PLAYING -> playing.draw(g);
             case SELECT_LOBBY -> lobby.draw(g);
+            case SERVER_SELECT -> serverSelect.draw(g);
             case OPTIONS -> gameOptions.draw(g);
         }
 
@@ -139,6 +142,8 @@ public class Game implements Runnable{
     }
 
     public Lobby getLobby() {return lobby;}
+
+    public ServerSelect getServerSelect(){return serverSelect;}
 
     public GameOptions getGameOptions(){
         return gameOptions;

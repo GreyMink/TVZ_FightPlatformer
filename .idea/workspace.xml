@@ -4,63 +4,41 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="11d916e2-e165-4d9c-bfad-abee3b5f7372" name="Changes" comment="Izmjena smjera projektila ovisno o poziciji miša">
-      <change afterPath="$PROJECT_DIR$/res/characters/player_soldier.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/entities/PlayerCharacter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/gamestates/Lobby.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ui/SelectButton.java" afterDir="false" />
+    <list default="true" id="11d916e2-e165-4d9c-bfad-abee3b5f7372" name="Changes" comment="Implementiran lobby screen na kojem se bira stage i playercharacter. Izbačeni prijašnji defaulti.&#10;Dodane slike za characters za primjenu na select screen">
+      <change afterPath="$PROJECT_DIR$/src/ui/ServerButton.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Crabby.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Crabby.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Enemy.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Enemy.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Entity.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Entity.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Player.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/GameOptions.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/GameOptions.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/Gamestate.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/Gamestate.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/Lobby.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/Lobby.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/Menu.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/Menu.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/Playing.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/Playing.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/State.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/State.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/inputs/KeyboardInputs$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/inputs/KeyboardInputs$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/inputs/KeyboardInputs.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/inputs/KeyboardInputs.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/inputs/MouseInputs$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/inputs/MouseInputs$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/inputs/MouseInputs.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/inputs/MouseInputs.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/levels/Level.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/levels/Level.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/levels/LevelManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/levels/LevelManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/main/Game$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/main/Game$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/main/Game.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/main/Game.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/objects/ObjectManager$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/objects/ObjectManager$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/objects/ObjectManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/objects/ObjectManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/objects/Projectile.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/objects/Projectile.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/player_sprites.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/stages/level_one_data.png" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/stages/level_one_data.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/MatchEndOverlay.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$EnemyConstants.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$EnemyConstants.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$ImageConstants.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$ImageConstants.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$PlayerConstants.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$PlayerConstants.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$Buttons.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$Buttons.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$PauseButtons.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$PauseButtons.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$URMButtons.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$URMButtons.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$VolumeButtons.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$VolumeButtons.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/LoadSave.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/LoadSave.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/player_sprites.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/characters/player_sprites.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/res/stages/level_one_data.png" beforeDir="false" afterPath="$PROJECT_DIR$/res/stages/level_one_data.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Crabby.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Crabby.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Enemy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Enemy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Entity.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Entity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/AudioOptions.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/AudioOptions.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/PauseButton.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/PauseOverlay.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/PauseOverlay.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/SelectButton.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/SelectButton.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/SoundButton.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/SoundButton.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/UrmButton.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/UrmButton.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/VolumeButton.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/ui/VolumeButton.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/entities/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/entities/PlayerCharacter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/PlayerCharacter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gamestates/GameOptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gamestates/GameOptions.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/gamestates/Gamestate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gamestates/Gamestate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gamestates/Lobby.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gamestates/Lobby.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/gamestates/Menu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gamestates/Menu.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/gamestates/Playing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gamestates/Playing.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/gamestates/ServerSelect.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gamestates/ServerSelect.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/gamestates/State.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gamestates/State.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/inputs/KeyboardInputs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inputs/KeyboardInputs.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/inputs/MouseInputs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/inputs/MouseInputs.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/levels/Level.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/levels/Level.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/levels/LevelManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/levels/LevelManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/objects/ObjectManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/objects/ObjectManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/objects/Projectile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/objects/Projectile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/MatchEndOverlay.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/Constants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/LoadSave.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/LoadSave.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/AudioOptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/AudioOptions.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/PauseButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/BasicButton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/PauseOverlay.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/PauseOverlay.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/SelectButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/SelectButton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/SoundButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/SoundButton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/UrmButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/UrmButton.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ui/VolumeButton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/VolumeButton.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -151,7 +129,9 @@
       <workItem from="1756720409284" duration="24521000" />
       <workItem from="1756801006641" duration="29879000" />
       <workItem from="1756889758303" duration="4255000" />
-      <workItem from="1756899527426" duration="4971000" />
+      <workItem from="1756899527426" duration="7552000" />
+      <workItem from="1756912447730" duration="12814000" />
+      <workItem from="1756926108122" duration="2656000" />
     </task>
     <task id="LOCAL−00001" summary="inicijalizacija">
       <option name="closed" value="true" />
@@ -174,7 +154,21 @@
       <option name="presentableId" value="LOCAL−00003" />
       <updated>1756664985842</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL−00004" summary="Implementiran lobby screen na kojem se bira stage i playercharacter. Izbačeni prijašnji defaulti.&#10;Dodane slike za characters za primjenu na select screen">
+      <option name="closed" value="true" />
+      <created>1756904842091</created>
+      <option name="number" value="LOCAL−00004" />
+      <option name="presentableId" value="LOCAL−00004" />
+      <updated>1756904842091</updated>
+    </task>
+    <task id="LOCAL−00005" summary="Implementiran lobby screen na kojem se bira stage i playercharacter. Izbačeni prijašnji defaulti.&#10;Dodane slike za characters za primjenu na select screen">
+      <option name="closed" value="true" />
+      <created>1756904846455</created>
+      <option name="number" value="LOCAL−00005" />
+      <option name="presentableId" value="LOCAL−00005" />
+      <updated>1756904846455</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -195,7 +189,8 @@
     <MESSAGE value="inicijalizacija" />
     <MESSAGE value="Implementacija projektila" />
     <MESSAGE value="Izmjena smjera projektila ovisno o poziciji miša" />
-    <option name="LAST_COMMIT_MESSAGE" value="Izmjena smjera projektila ovisno o poziciji miša" />
+    <MESSAGE value="Implementiran lobby screen na kojem se bira stage i playercharacter. Izbačeni prijašnji defaulti.&#10;Dodane slike za characters za primjenu na select screen" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implementiran lobby screen na kojem se bira stage i playercharacter. Izbačeni prijašnji defaulti.&#10;Dodane slike za characters za primjenu na select screen" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -211,12 +206,21 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/entities/Player.java</url>
-          <line>157</line>
+          <line>156</line>
           <properties class="entities.Player" method="updateAnimationTick">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
           <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/gamestates/Lobby.java</url>
+          <line>155</line>
+          <properties class="gamestates.Lobby" method="resetCharacterButtons">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/utils/Constants.java</url>
@@ -225,7 +229,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/entities/Player.java</url>
-          <line>457</line>
+          <line>456</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>

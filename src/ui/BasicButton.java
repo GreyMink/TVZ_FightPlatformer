@@ -2,11 +2,11 @@ package ui;
 
 import java.awt.*;
 
-public class PauseButton {
+public class BasicButton {
     protected int x,y,width, height;
     protected Rectangle bounds;
 
-    public PauseButton(int x,int y, int width, int height) {
+    public BasicButton(int x, int y, int width, int height) {
         this.x = x;
         this.y = y;
         this.width = width;

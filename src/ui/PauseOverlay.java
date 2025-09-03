@@ -9,9 +9,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-import static utils.Constants.UI.PauseButtons.*;
 import static utils.Constants.UI.URMButtons.*;
-import static utils.Constants.UI.VolumeButtons.*;
 
 public class PauseOverlay {
     private Playing playing;
@@ -127,8 +125,8 @@ public class PauseOverlay {
     public void mouseDragged(MouseEvent e){
         audioOptions.mouseDragged(e);
     }
-    private boolean isIn(MouseEvent e, PauseButton pauseButton){
-        return pauseButton.getBounds().contains(e.getX(),e.getY());
+    private boolean isIn(MouseEvent e, BasicButton basicButton){
+        return basicButton.getBounds().contains(e.getX(),e.getY());
     }
 
 
