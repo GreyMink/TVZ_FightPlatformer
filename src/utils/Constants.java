@@ -68,26 +68,6 @@ public class Constants {
         public static final int DEAD = 6;
         public static final int DASH = 7;
 
-        public static int getSpriteAmount(int player_action){
-            switch (player_action) {
-                case DEAD:
-                    return 8;
-                case RUNNING:
-                    return 6;
-                case IDLE:
-                    return 5;
-                case HIT:
-                    return 4;
-                case JUMP:
-                case ATTACK_1:
-                    return 3;
-                case DASH:
-                case FALLING:
-                default:
-                    return 1;
-            }
-        }
-
     }
 
     public static class ImageConstants{

@@ -24,6 +24,26 @@ public class LevelManager {
         buildAllStages();
     }
 
+    //NEPOTREBNO
+    public void loadNextStage(){
+        stageIndex++;
+        if(stageIndex>=stages.size()){
+            stageIndex =0;
+            Gamestate.state = Gamestate.MENU;
+        }
+        Level newStage = stages.get(stageIndex);
+        game.getPlaying().getPlayer().loadLvlData(newStage.getLvlData());
+        game.getPlaying().getObjectManager().loadObjects(newStage);
+    }
+
+    public void loadStage(int stageIndex){
+        this.stageIndex = stageIndex;
+        Level newStage = stages.get(stageIndex);
+        game.getPlaying().getPlayer().loadLvlData(newStage.getLvlData());
+        game.getPlaying().getObjectManager().loadObjects(newStage);
+    }
+
+
     private void buildAllStages() {
         BufferedImage[] allStages = LoadSave.getAllStages();
         for(BufferedImage img : allStages){
@@ -56,19 +76,21 @@ public class LevelManager {
 
     }
 
-    public Level getCurrentLevel(){
+    //region Getters & Setters
+    public Level getCurrentStage(){
         return stages.get(stageIndex);
     }
-
-    public void loadNextLevel(){
-        stageIndex++;
-        if(stageIndex>=stages.size()){
-            stageIndex =0;
-            Gamestate.state = Gamestate.MENU;
-        }
-
-        Level newStage = stages.get(stageIndex);
-        game.getPlaying().getPlayer().loadLvlData(newStage.getLvlData());
-        game.getPlaying().getObjectManager().loadObjects(newStage);
+    public ArrayList<Level> getStages() {return stages;}
+    public int getAmountofStages(){
+        return stages.size();
     }
+    public int getStageIndex(){
+        return stageIndex;
+    }
+
+    public void setStageIndex(int stageIndex){
+        this.stageIndex = stageIndex;
+    }
+    //endregion
+
 }

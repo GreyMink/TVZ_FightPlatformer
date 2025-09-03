@@ -1,10 +1,8 @@
 package main;
 
 import audio.AudioPlayer;
-import gamestates.GameOptions;
-import gamestates.Gamestate;
+import gamestates.*;
 import gamestates.Menu;
-import gamestates.Playing;
 import ui.AudioOptions;
 import utils.LoadSave;
 
@@ -22,6 +20,7 @@ public class Game implements Runnable{
     private Menu menu;
     private GameOptions gameOptions;
     private AudioOptions audioOptions;
+    private Lobby lobby;
     private AudioPlayer audioPlayer;
 
     public static final int TILES_DEFAULT_SIZE = 32;
@@ -41,15 +40,14 @@ public class Game implements Runnable{
         gamePanel.setFocusable(true);
         gamePanel.requestFocus();
 
-
         startGameLoop();
-
     }
 
     private void initClasses() {
         audioOptions = new AudioOptions();
         menu = new Menu(this);
         playing = new Playing(this);
+        lobby = new Lobby(this);
         gameOptions = new GameOptions(this);
     }
 
@@ -59,36 +57,21 @@ public class Game implements Runnable{
     }
 
     public void update(){
-        switch (Gamestate.state){
-            case MENU:
-                menu.update();
-                break;
-            case PLAYING:
-                playing.update();
-                break;
-            case OPTIONS:
-                gameOptions.update();
-                break;
-            case QUIT:
-            default:
-                System.exit(0);
-                break;
+        switch (Gamestate.state) {
+            case MENU -> menu.update();
+            case PLAYING -> playing.update();
+            case SELECT_LOBBY ->  lobby.update();
+            case OPTIONS -> gameOptions.update();
+            case QUIT -> System.exit(0);
         }
     }
 
     public void render(Graphics g){
-        switch (Gamestate.state){
-            case MENU:
-                menu.draw(g);
-                break;
-            case PLAYING:
-                playing.draw(g);
-                break;
-            case OPTIONS:
-                gameOptions.draw(g);
-                break;
-            default:
-                break;
+        switch (Gamestate.state) {
+            case MENU -> menu.draw(g);
+            case PLAYING -> playing.draw(g);
+            case SELECT_LOBBY -> lobby.draw(g);
+            case OPTIONS -> gameOptions.draw(g);
         }
 
     }
@@ -154,6 +137,8 @@ public class Game implements Runnable{
     public Playing getPlaying(){
         return playing;
     }
+
+    public Lobby getLobby() {return lobby;}
 
     public GameOptions getGameOptions(){
         return gameOptions;

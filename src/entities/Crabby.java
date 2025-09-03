@@ -7,7 +7,7 @@ import static utils.Constants.EnemyConstants.*;
 public class Crabby extends Enemy{
     public Crabby(float x, float y) {
         super(x, y, CRABBY_WIDTH, CRABBY_HEIGHT, CRABBY);
-        initHitBox(x, y, 22,19);
+        initHitBox(22,19);
     }
 
     public void update(int[][] lvlData, Player player){

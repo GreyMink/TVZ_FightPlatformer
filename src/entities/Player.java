@@ -27,8 +27,8 @@ public class Player extends Entity{
     private boolean left, up, right, down, jump;
     private float playerSpeed = Game.SCALE;
     private int[][] lvlData;
-    private float xDrawOffset = 21 * Game.SCALE;
-    private float yDrawOffset = 4 * Game.SCALE;
+//    private float xDrawOffset = 21 * Game.SCALE;
+//    private float yDrawOffset = 4 * Game.SCALE;
 
     private Boolean invincibility = false;
     //endregion
@@ -63,9 +63,6 @@ public class Player extends Entity{
     private Rectangle2D.Float attackBox;
 
     private int flipX = 0;
-
-
-
     private int flipW = 1;
     private MouseEvent lastMouseEvent;
 
@@ -74,14 +71,19 @@ public class Player extends Entity{
     private boolean dashUsedCheck = false;
     private int dashTick;
 
+    private final PlayerCharacter playerCharacter;
+
     private Playing playing;
 
 
-    public Player(float x, float y, int width, int height, Playing playing) {
-        super(x, y, width, height);
+    public Player(PlayerCharacter playerCharacter, Playing playing) {
+        super(0, 0, (int)(playerCharacter.spriteWIDTH * Game.SCALE), (int)(playerCharacter.spriteHEIGHT * Game.SCALE) );
+        this.playerCharacter = playerCharacter;
         this.playing = playing;
         loadAnimations();
-        initHitBox(x,y,20,27);
+        //Zamjeni status bar image
+        statusBarImg = LoadSave.GetSpriteAtlas(LoadSave.STATUS_BAR);
+        initHitBox(playerCharacter.hitboxWIDTH,playerCharacter.hitboxHEIGHT);
         initAttackBox();
     }
 
@@ -158,7 +160,7 @@ public class Player extends Entity{
         if(aniTick >= aniSpeed){
             aniTick = 0;
             aniIndex++;
-            if(aniIndex >= getSpriteAmount(playerAction)){
+            if(aniIndex >= playerCharacter.getSpriteAmount(playerAction)){
                 aniIndex = 0;
                 attacking=false;
                 attackChecked = false;
@@ -278,8 +280,8 @@ public class Player extends Entity{
 
     public void render(Graphics g){
 
-        g.drawImage(animations[playerAction][aniIndex], (int)(hitBox.x - xDrawOffset + flipX), (int)(hitBox.y - yDrawOffset), width * flipW, height, null);
-        //drawHitbox(g);
+        g.drawImage(animations[playerAction][aniIndex], (int)(hitBox.x - playerCharacter.xDrawOffset + flipX), (int)(hitBox.y - playerCharacter.yDrawOffset), width * flipW, height, null);
+        drawHitbox(g);
         drawAttackBox(g);
         drawUI(g);
     }
@@ -402,14 +404,14 @@ public class Player extends Entity{
 
     private void loadAnimations() {
 
-        BufferedImage img = LoadSave.GetSpriteAtlas(LoadSave.PLAYER_ATLAS);
+        BufferedImage img = LoadSave.GetSpriteAtlas(playerCharacter.playerAtlas);
         //9 mogućih animacija, najviše stanja u jednoj animaciji je 6
-        animations = new BufferedImage[7][8];
+        animations = new BufferedImage[playerCharacter.rowPA][playerCharacter.colPA];
         for(int i = 0; i < animations.length; i++)
             for(int j = 0; j < animations[i].length;j++ ){
-                animations[i][j] = img.getSubimage(j*PLAYER_WIDTH, i*PLAYER_HEIGHT, PLAYER_WIDTH, PLAYER_HEIGHT);
+                animations[i][j] = img.getSubimage(j*playerCharacter.spriteWIDTH, i*playerCharacter.spriteHEIGHT, playerCharacter.spriteWIDTH, playerCharacter.spriteHEIGHT);
             }
-        statusBarImg = LoadSave.GetSpriteAtlas(LoadSave.STATUS_BAR);
+
 
     }
 

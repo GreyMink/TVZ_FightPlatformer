@@ -1,6 +1,7 @@
 package gamestates;
 
 import entities.Player;
+import entities.PlayerCharacter;
 import levels.LevelManager;
 import main.Game;
 import objects.ObjectManager;
@@ -28,37 +29,44 @@ public class Playing extends State implements Statemethods{
 
     private boolean paused = false;
     private boolean gameOver = false;
-    private boolean matchEnd;
+    private boolean matchEnd = false;
 
     public Playing(Game game) {
         super(game);
         initClasses();
 
         backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.TEMPLE_STAGE_BACKGROUND);
-        loadStartStage();
+        loadStageObjects();
     }
 
     public void loadNextStage(){
+
+        levelManager.loadNextStage();
+        player.setSpawn(levelManager.getCurrentStage().getPlayerSpawn());
         resetAll();
-        levelManager.loadNextLevel();
-        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
     }
 
-    private void loadStartStage() {
-        objectManager.loadObjects(levelManager.getCurrentLevel());
+    private void loadStageObjects() {
+        objectManager.loadObjects(levelManager.getCurrentStage());
     }
 
 
     private void initClasses() {
         levelManager = new LevelManager(game);
         objectManager = new ObjectManager(this);
-        player = new Player(200,200, (int) (64*Game.SCALE), (int)(40*Game.SCALE), this);
-        player.loadLvlData(levelManager.getCurrentLevel().getLvlData());
-        player.setSpawn(levelManager.getCurrentLevel().getPlayerSpawn());
+
+        //Default character
+        //setPlayerCharacter(PlayerCharacter.PIRATE);
 
         pauseOverlay = new PauseOverlay(this);
         gameOverOverlay = new GameOverOverlay(this);
         matchFinishedOverlay = new MatchFinishedOverlay(this);
+    }
+
+    public void setPlayerCharacter(PlayerCharacter playerCharacter) {
+        player = new Player(playerCharacter, this);
+        player.loadLvlData(levelManager.getCurrentStage().getLvlData());
+        player.setSpawn(levelManager.getCurrentStage().getPlayerSpawn());
     }
 
     @Override
@@ -70,7 +78,7 @@ public class Playing extends State implements Statemethods{
         }else if(!gameOver){
             levelManager.update();
             player.update();
-            objectManager.update(levelManager.getCurrentLevel().getLvlData(), player);
+            objectManager.update(levelManager.getCurrentStage().getLvlData(), player);
         }
     }
 
@@ -99,9 +107,7 @@ public class Playing extends State implements Statemethods{
         objectManager.resetAllObjects();
     }
 
-    public void setGameOver(boolean gameOver){
-        this.gameOver = gameOver;
-    }
+    public void setGameOver(boolean gameOver){this.gameOver = gameOver;}
 
     public void setMatchEnd(boolean matchEnd){
         this.matchEnd = matchEnd;
@@ -228,6 +234,8 @@ public class Playing extends State implements Statemethods{
     public Player getPlayer(){
         return player;
     }
+
+    public LevelManager getLevelManager(){return levelManager;}
 
     public ObjectManager getObjectManager(){return objectManager;}
 

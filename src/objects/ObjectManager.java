@@ -50,43 +50,6 @@ public class ObjectManager {
 
     }
 
-    public void checkTrapCollision(Player player){
-        for(Spike s : spikes){
-            if(s.getHitBox().intersects(player.getHitBox()) && !player.getInvincibility()){
-                player.changeHealth(-10);
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        player.setInvincibility(true);
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                        player.setInvincibility(false);
-                    }
-                }).start();
-            }
-        }
-    }
-    public void checkProjectileCollision(Player player){
-    }
-    public void checkObjectHit(Rectangle2D.Float attackBox){
-        for (GameContainer gc : containers){
-            if(gc.isActive()){
-                if(gc.getHitBox().intersects(attackBox)){
-                    gc.setAnimation(true);
-                }
-            }
-        }
-    }
-
-
-    private void shootProjectile(Player player){
-        int directionX = player.getFlipW();
-
-        projectiles.add(new Projectile((int)player.getHitBox().x, (int)player.getHitBox().y, player.getLastMouseEvent().getX(),player.getLastMouseEvent().getY()));
-    }
 
     public void update(int[][] lvlData, Player player){
         for(GameContainer gc: containers){
@@ -153,4 +116,43 @@ public class ObjectManager {
             gc.reset();
         }
     }
+
+    public void checkTrapCollision(Player player){
+        for(Spike s : spikes){
+            if(s.getHitBox().intersects(player.getHitBox()) && !player.getInvincibility()){
+                player.changeHealth(-10);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        player.setInvincibility(true);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        player.setInvincibility(false);
+                    }
+                }).start();
+            }
+        }
+    }
+    public void checkProjectileCollision(Player player){
+    }
+    public void checkObjectHit(Rectangle2D.Float attackBox){
+        for (GameContainer gc : containers){
+            if(gc.isActive()){
+                if(gc.getHitBox().intersects(attackBox)){
+                    gc.setAnimation(true);
+                }
+            }
+        }
+    }
+
+
+    private void shootProjectile(Player player){
+        int directionX = player.getFlipW();
+
+        projectiles.add(new Projectile((int)player.getHitBox().x, (int)player.getHitBox().y, player.getLastMouseEvent().getX(),player.getLastMouseEvent().getY()));
+    }
+
 }

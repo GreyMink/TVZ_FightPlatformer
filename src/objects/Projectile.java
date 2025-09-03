@@ -26,7 +26,7 @@ public class Projectile {
         directionX = dx/distance;
         directionY = dy/distance;
 
-        this.maxDistance = 5000;
+        this.maxDistance = 300;
     }
 
     public void updatePosition(){
