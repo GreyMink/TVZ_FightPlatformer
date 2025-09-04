@@ -1,5 +1,6 @@
 package entities;
 
+import entities.Attacks.*;
 import gamestates.Playing;
 import main.Game;
 import utils.LoadSave;
@@ -8,6 +9,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import static utils.Constants.GRAVITY;
 import static utils.Constants.PlayerConstants.*;
@@ -29,6 +31,8 @@ public class Player extends Entity{
 //    private float xDrawOffset = 21 * Game.SCALE;
 //    private float yDrawOffset = 4 * Game.SCALE;
 
+    private final PlayerCharacter playerCharacter;
+    private Playing playing;
     private Boolean invincibility = false;
     //endregion
 
@@ -41,6 +45,8 @@ public class Player extends Entity{
 
     //region Health Bar
     private BufferedImage statusBarImg;
+    //max lives in match
+    private int lives = 3;
     private int healthPercent = 0;
 
     private int statusBarWidth = (int)(192 * Game.SCALE);
@@ -58,6 +64,11 @@ public class Player extends Entity{
     private int healthWidth = healthBarWidth;
     //endregion
 
+    //region Attack Variables
+    private ArrayList<BaseAttack> attacks;
+    private BaseAttack currentAttack;
+    //endregion
+
     //Attack Hitbox
     private Rectangle2D.Float attackBox;
 
@@ -70,9 +81,7 @@ public class Player extends Entity{
     private boolean dashUsedCheck = false;
     private int dashTick;
 
-    private final PlayerCharacter playerCharacter;
 
-    private Playing playing;
 
 
     public Player(PlayerCharacter playerCharacter, Playing playing) {
@@ -80,9 +89,15 @@ public class Player extends Entity{
         this.playerCharacter = playerCharacter;
         this.playing = playing;
         loadAnimations();
+
+        //attack initialization
+        attacks = new ArrayList<>();
+//        attacks.add(new BasicAttack());
+//        attacks.add(new PowerAttack());
+
         //Zamjeni status bar image
         statusBarImg = LoadSave.GetSpriteAtlas(LoadSave.STATUS_BAR);
-        initHitBox(playerCharacter.hitboxWIDTH,playerCharacter.hitboxHEIGHT);
+        initHitBox((int)playerCharacter.hitbox.width,(int)playerCharacter.hitbox.height);
         initAttackBox();
     }
 
@@ -515,5 +530,9 @@ public class Player extends Entity{
     }
     public MouseEvent getLastMouseEvent() {
         return lastMouseEvent;
+    }
+
+    public Playing getPlaying() {
+        return playing;
     }
 }
