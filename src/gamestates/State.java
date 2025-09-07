@@ -1,7 +1,6 @@
 package gamestates;
 
 import main.Game;
-import ui.BasicButton;
 import ui.MenuButton;
 import ui.SelectButton;
 import ui.ServerButton;

@@ -9,7 +9,8 @@ import static utils.Constants.UI.URMButtons.*;
 public class UrmButton extends BasicButton implements UImethods{
 
     private BufferedImage[] imgs;
-    private int rowIndex, index;
+    private final int rowIndex;
+    private int index;
     private boolean mouseOver, mousePressed;
 
     public UrmButton(int x, int y, int width, int height, int rowIndex) {

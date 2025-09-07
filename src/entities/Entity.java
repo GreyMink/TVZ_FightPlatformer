@@ -8,7 +8,8 @@ import java.awt.geom.Rectangle2D;
 public abstract class Entity {
 
     protected float x, y;
-    protected int width,height;
+    protected int width;
+    protected int height;
     protected Rectangle2D.Float hitBox;
     protected boolean knockedOut = false;
 
@@ -33,7 +34,7 @@ public abstract class Entity {
     public void setKO(Boolean knockedOut){
         this.knockedOut = knockedOut;
     }
-
+    public void setPosition(int x, int y){this.x = x; this.y = y;}
 /*    protected void updateHitbox(){
         hitBox.x = (int) x;
         hitBox.y = (int) y;
@@ -42,6 +43,10 @@ public abstract class Entity {
     public Rectangle2D.Float getHitBox(){
         return hitBox;
     }
+    public float getX() {return x;}
+    public float getY() {return y;}
+    public int getWidth() {return width;}
+    public int getHeight() {return height;}
 
 
 }

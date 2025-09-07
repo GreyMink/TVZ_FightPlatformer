@@ -13,9 +13,9 @@ import java.awt.image.BufferedImage;
 
 import static utils.Constants.UI.URMButtons.*;
 
-public class GameOptions extends State implements Statemethods {
+public class GameOptions extends State implements StateMethods {
 
-    private AudioOptions audioOptions;
+    private final AudioOptions audioOptions;
     private BufferedImage backgroundImage, optionsBackgroundImage;
     private int backgroundX,backgroundY, backgroundW,backgroundH;
     private UrmButton menuButton;

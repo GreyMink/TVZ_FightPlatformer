@@ -32,15 +32,15 @@ public enum PlayerCharacter {
                     new AttackData("Soldier Power Shot",AttackType.POWER, 14, 7, 20, 10, 30, new Rectangle2D.Float(0,0,10,10),  10, 0)
             });
 
-    int spriteA_IDLE, spriteA_RUNNING, spriteA_JUMP, spriteA_FALLING, spriteA_ATTACK, spriteA_HIT, spriteA_DEAD, spriteA_DASH;
-    int rowIDLE,rowRUNNING, rowJUMP, rowFALLING, rowATTACK, rowHIT, rowDEAD, rowDASH;
-    String playerAtlas;
-    int rowPA, colPA, spriteWIDTH, spriteHEIGHT;
+    final int spriteA_IDLE, spriteA_RUNNING, spriteA_JUMP, spriteA_FALLING, spriteA_ATTACK, spriteA_HIT, spriteA_DEAD /*,spriteA_DASH*/;
+    final int rowIDLE,rowRUNNING, rowJUMP, rowFALLING, rowATTACK, rowHIT, rowDEAD/*, rowDASH*/;
+    final String playerAtlas;
+    final int rowPA, colPA, spriteWIDTH, spriteHEIGHT;
 //    int hitboxWIDTH, hitboxHEIGHT;
-    Rectangle2D.Float hitbox;
-    int xDrawOffset, yDrawOffset;
+    final Rectangle2D.Float hitbox;
+    final int xDrawOffset, yDrawOffset;
     int playerIndex;
-    String select_image;
+    final String select_image;
 
     AttackData[] attackData;
 
@@ -91,7 +91,7 @@ public enum PlayerCharacter {
             case FALLING -> spriteA_FALLING;
             case ATTACK_1 -> spriteA_ATTACK;
             case HIT -> spriteA_HIT;
-            case DASH -> spriteA_DASH;
+//            case DASH -> spriteA_DASH;
             case DEAD -> spriteA_DEAD;
             default -> throw new IllegalStateException("Unexpected value: " + playerAction);
         };
@@ -105,7 +105,7 @@ public enum PlayerCharacter {
             case FALLING -> rowFALLING;
             case ATTACK_1 -> rowATTACK;
             case HIT -> rowHIT;
-            case DASH -> rowDASH;
+//            case DASH -> rowDASH;
             case DEAD -> rowDEAD;
             default -> throw new IllegalStateException("Unexpected value: " + playerAction);
         };

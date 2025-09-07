@@ -10,17 +10,17 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import static utils.Constants.ObjectConstants.*;
-import static utils.HelpMethods.GetLevelData;
-import static utils.HelpMethods.GetPlayerSpawn;
+import static utils.HelpMethods.*;
 
 public class Level {
-    private BufferedImage img;
+    private final BufferedImage img;
     private int[][] lvlData;
 
     private ArrayList<GameContainer> containers;
     private ArrayList<Spike> spikes;
 
     private Point playerSpawn;
+    private Point remotePlayerSpawn;
 
     public Level(BufferedImage img){
 
@@ -31,7 +31,9 @@ public class Level {
         createStageData();
         createContainers();
         createSpikes();
+
         calcPlayerSpawn();
+        calcRemotePlayerSpawn();
     }
 
     private void loadLevel(){
@@ -55,13 +57,16 @@ public class Level {
         else
             lvlData[y][x] = redValue;
     }
-
     private void loadEntities(int greenValue, int x, int y) {
-        switch(greenValue){
-            case 100 -> playerSpawn = new Point(x * Game.TILES_SIZE, y * Game.TILES_SIZE);
-        }
-//        if(greenValue == 100)
-//            playerSpawn = new Point(x * Game.TILES_SIZE, y * Game.TILES_SIZE);
+        //switch for multiple entities
+        //        switch(greenValue){
+//            case 100 -> playerSpawn = new Point(x * Game.TILES_SIZE, y * Game.TILES_SIZE);
+//        }
+
+        if(greenValue == 100)
+            playerSpawn = new Point(x * Game.TILES_SIZE, y * Game.TILES_SIZE);
+        if(greenValue == 101)
+            remotePlayerSpawn = new Point(x * Game.TILES_SIZE, y * Game.TILES_SIZE);
     }
     private void loadObjects(int blueValue, int x, int y) {
         switch(blueValue){
@@ -74,6 +79,7 @@ public class Level {
 
     //Create
     public void calcPlayerSpawn(){playerSpawn = GetPlayerSpawn(img);}
+    public void calcRemotePlayerSpawn(){remotePlayerSpawn = GetRemotePlayerSpawn(img);}
     private void createStageData() {lvlData = GetLevelData(img);}
     private void createSpikes(){spikes = HelpMethods.getSpikes(img);}
     private void createContainers() {containers = HelpMethods.GetContainers(img);}
@@ -88,5 +94,6 @@ public class Level {
         return lvlData;
     }
     public Point getPlayerSpawn(){return playerSpawn;}
+    public Point getRemotePlayerSpawn(){return remotePlayerSpawn;}
     public BufferedImage getSelectImage() {return img;}
 }

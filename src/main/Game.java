@@ -3,18 +3,17 @@ package main;
 import audio.AudioPlayer;
 import gamestates.*;
 import gamestates.Menu;
-import network.Server;
+//import network.Server;
 import ui.AudioOptions;
-import utils.LoadSave;
 
 import java.awt.*;
 
 public class Game implements Runnable{
 
-    private GameWindow gameWindow;
-    private GamePanel gamePanel;
+    private final GameWindow gameWindow;
+    private final GamePanel gamePanel;
     private Thread gameThread;
-    private final int FPS_SET = 120;
+    private final int FPS_SET = 60;
     private final int UPS_SET = 200;
 
     private Playing playing;
@@ -115,45 +114,39 @@ public class Game implements Runnable{
 
             }
 
-
             if(System.currentTimeMillis() - lastCheck >= 1000){
                 lastCheck = System.currentTimeMillis();
                 System.out.println("FPS: " + frames + " | UPS: " + updates);
                 frames=0;
                 updates=0;
             }
-
         }
     }
 
 
     public void WindowFocusLost(){
         if(Gamestate.state == Gamestate.PLAYING){
-            playing.getPlayer().resetDirBooleans();
+            playing.getHostPlayer().resetDirBooleans();
         }
     }
 
     public Menu getMenu(){
         return menu;
     }
-
     public Playing getPlaying(){
         return playing;
     }
-
     public Lobby getLobby() {return lobby;}
-
     public ServerSelect getServerSelect(){return serverSelect;}
-
     public GameOptions getGameOptions(){
         return gameOptions;
     }
-
     public AudioOptions getAudioOptions(){
         return audioOptions;
     }
 
-    public AudioPlayer getAudioPlayer(){
-        return audioPlayer;
-    }
+    public void startMatch(){Gamestate.state = Gamestate.PLAYING;}
+//    public AudioPlayer getAudioPlayer(){
+//        return audioPlayer;
+//    }
 }

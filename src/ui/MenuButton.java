@@ -1,7 +1,6 @@
 package ui;
 
 import gamestates.Gamestate;
-import gamestates.Menu;
 import utils.LoadSave;
 
 import java.awt.*;
@@ -10,7 +9,8 @@ import java.awt.image.BufferedImage;
 import static utils.Constants.UI.Buttons.*;
 
 public class MenuButton implements UImethods{
-    private int xPos, yPos, rowIndex, index;
+    private final int xPos, yPos;
+    private int rowIndex, index;
     private int xOffsetCenter = B_WIDTH / 2;
     private Gamestate state;
     private BufferedImage[] imgs;
@@ -61,30 +61,23 @@ public class MenuButton implements UImethods{
         g.drawImage(imgs[index], xPos - xOffsetCenter, yPos, B_WIDTH,B_HEIGHT, null);
     }
 
-
-
     //region Getters & Setters
-
     public Rectangle getBounds() {
         return bounds;
     }
-
     public void setBounds(Rectangle bounds) {
         this.bounds = bounds;
     }
-
+    public Gamestate getState() {return state;}
     public boolean isMouseOver() {
         return mouseOver;
     }
-
     public void setMouseOver(boolean mouseOver) {
         this.mouseOver = mouseOver;
     }
-
     public boolean isMousePressed() {
         return mousePressed;
     }
-
     public void setMousePressed(boolean mousePressed) {
         this.mousePressed = mousePressed;
     }

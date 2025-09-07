@@ -47,7 +47,7 @@ public class LoadSave {
 
     //region Getters
     public static BufferedImage GetSpriteAtlas(String fileName){
-        BufferedImage img = null;
+        BufferedImage img;
         InputStream is = LoadSave.class.getResourceAsStream("/" + fileName);
         try {
             img = ImageIO.read(is);

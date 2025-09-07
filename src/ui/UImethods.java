@@ -3,7 +3,7 @@ package ui;
 import java.awt.*;
 
 public interface UImethods {
-    public void update();
-    public void draw(Graphics g);
-    public void loadButtonImgs();
+    void update();
+    void draw(Graphics g);
+    void loadButtonImgs();
 }

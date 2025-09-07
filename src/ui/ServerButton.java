@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 public class ServerButton extends BasicButton implements UImethods{
 
     private BufferedImage buttonImg;
-    private String serverName;
+    private final String serverName;
 
     // buttonstate za stanja gumba - normal, pressed, hover
     private int buttonState;
@@ -57,7 +57,7 @@ public class ServerButton extends BasicButton implements UImethods{
 
             g.setColor(Color.BLUE);
             g.setFont(new Font("Sans Serif", Font.BOLD, 25));
-//            g.drawString(serverName, x+width/2-20, y+height/2-10);
+            g.drawString(serverName, x+width-20, y+height-10);
 
 //            g.drawImage(buttonImg, x+10, y+10, width - 20, height - 20, null);
         }

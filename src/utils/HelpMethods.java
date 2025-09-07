@@ -9,7 +9,6 @@ import objects.Spike;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 import java.util.ArrayList;
 
 import static utils.Constants.ObjectConstants.*;
@@ -20,9 +19,7 @@ public class HelpMethods {
         if(!IsSolid(x,y,lvlData, player))
             if(!IsSolid(x+width,y+height, lvlData, player))
                 if(!IsSolid(x+width,y,lvlData, player))
-                    if(!IsSolid(x,y+height,lvlData, player)){
-                        return true;
-                    }
+                    return !IsSolid(x, y + height, lvlData, player);
         return false;
     }
 
@@ -87,9 +84,7 @@ public class HelpMethods {
     public static boolean IsEntityOnFloor(Rectangle2D.Float hitBox,int[][] lvlData, Player player){
         //Provjera da li su točke ispod donje lijeve i donje desne točke objekti
         if(!IsSolid(hitBox.x, hitBox.y + hitBox.height + 1, lvlData, player)){
-            if(!IsSolid(hitBox.x + hitBox.width, hitBox.y + hitBox.height + 1, lvlData, player)){
-                return false;
-            }
+            return IsSolid(hitBox.x + hitBox.width, hitBox.y + hitBox.height + 1, lvlData, player);
         }
         return true;
     }
@@ -108,9 +103,7 @@ public class HelpMethods {
         if(!IsSolid(x,y,lvlData))
             if(!IsSolid(x+width,y+height, lvlData))
                 if(!IsSolid(x+width,y,lvlData))
-                    if(!IsSolid(x,y+height,lvlData)){
-                        return true;
-                    }
+                    return !IsSolid(x, y + height, lvlData);
         return false;
     }
 
@@ -155,6 +148,18 @@ public class HelpMethods {
                 Color color = new Color(img.getRGB(j, i));
                 int value = color.getGreen();
                 if (value == 100) {
+                    return new Point(j * Game.TILES_SIZE, i * Game.TILES_SIZE);
+                }
+            }
+        }
+        return new Point(Game.TILES_SIZE, Game.TILES_SIZE);
+    }
+    public static Point GetRemotePlayerSpawn(BufferedImage img){
+        for(int i =0; i < img.getHeight(); i++){
+            for(int j = 0; j < img.getWidth(); j++) {
+                Color color = new Color(img.getRGB(j, i));
+                int value = color.getGreen();
+                if (value == 101) {
                     return new Point(j * Game.TILES_SIZE, i * Game.TILES_SIZE);
                 }
             }

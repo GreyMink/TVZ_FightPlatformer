@@ -1,6 +1,8 @@
 package gamestates;
 
 import main.Game;
+import network.Client;
+import network.Server;
 import ui.MenuButton;
 import utils.LoadSave;
 
@@ -8,9 +10,10 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
-public class Menu extends State implements Statemethods{
-    private MenuButton[] buttons = new MenuButton[3];
+public class Menu extends State implements StateMethods {
+    private final MenuButton[] buttons = new MenuButton[3];
     private BufferedImage backgroundImg;
     private BufferedImage backgroundImgBack;
     private int menuX, menuY, menuWidth, menuHeight;
@@ -47,6 +50,14 @@ public class Menu extends State implements Statemethods{
         for (MenuButton menuButton : buttons){
             menuButton.update();
         }
+        if(Gamestate.state == Gamestate.MENU) {
+            if(game.getLobby().getClient() != null){
+                game.getLobby().getClient().disconnect();
+            }
+
+            if(game.getLobby().getServer() != null)
+                game.getLobby().getServer().stop();
+        }
     }
 
     @Override
@@ -80,6 +91,42 @@ public class Menu extends State implements Statemethods{
         for (MenuButton menuButton : buttons){
             if(isIn(e, menuButton)){
                 if(menuButton.isMousePressed()){
+                    if(menuButton.getState() == Gamestate.SELECT_LOBBY){
+                        //region Network creation & temp default player selection
+                        try {
+                            if(game.getLobby().getClient() != null){
+                                game.getLobby().getClient().disconnect();
+                                game.getLobby().setClientInstance(null);
+                            }
+
+                            Server myServer = new Server(game, 7777);
+                            myServer.start();
+                            game.getLobby().setServerInstance(myServer); // so lobby can stop server on exit
+                            // Set local player as player0 and create remote placeholder
+//                            game.getPlaying().setPlayerCharacter(PlayerCharacter.PIRATE); // local player
+//                            game.getPlaying().setRemotePlayer(new Player(PlayerCharacter.SOLDIER, game.getPlaying())); // placeholder
+                        } catch (IOException exception) {
+                            exception.printStackTrace();
+                            // show error dialog
+                        }
+                        //endregion
+                    }
+
+                    if(menuButton.getState() == Gamestate.SERVER_SELECT){
+                        //region Network creation & temp default player selection
+                        try {
+                            if(game.getLobby().getServer() != null){
+                                game.getLobby().getServer().stop();
+                                game.getLobby().setServerInstance(null);
+                            }
+                            Client myClient = new Client(game);
+                            game.getServerSelect().setClientInstance(myClient);
+                        } finally {
+
+                        }
+                        //endregion
+                    }
+
                     menuButton.applyGameState();
                 }
                 break;
@@ -89,9 +136,7 @@ public class Menu extends State implements Statemethods{
     }
 
     private void resetButtons() {
-        for (MenuButton menuButton : buttons){
-            menuButton.resetBooleans();
-        }
+        for (MenuButton menuButton : buttons){menuButton.resetBooleans();}
     }
 
     @Override
@@ -110,13 +155,9 @@ public class Menu extends State implements Statemethods{
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_ENTER){
-            Gamestate.state = Gamestate.PLAYING;
-        }
+//        if(e.getKeyCode() == KeyEvent.VK_ENTER){Gamestate.state = Gamestate.PLAYING;}
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
-
-    }
+    public void keyReleased(KeyEvent e) {}
 }

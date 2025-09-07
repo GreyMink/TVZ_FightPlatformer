@@ -19,40 +19,41 @@ public class Player extends Entity{
 
     //region Variable
     private BufferedImage[][] animations;
-    private int aniTick, aniIndex, aniSpeed = 15;
+    private int aniTick, aniIndex;
+    private final int aniSpeed = 15;
     private int playerAction = IDLE;
     private boolean moving = false;
     private boolean attacking = false;
     private boolean projectileAttack = false;
 
     private boolean left, up, right, down, jump;
-    private float playerSpeed = Game.SCALE;
+    private final float playerSpeed = Game.SCALE;
     private int[][] lvlData;
 //    private float xDrawOffset = 21 * Game.SCALE;
 //    private float yDrawOffset = 4 * Game.SCALE;
 
     private final PlayerCharacter playerCharacter;
-    private Playing playing;
+    private final Playing playing;
     private Boolean invincibility = false;
     //endregion
 
     //region Gravity
     private float airSpeed = 0f;
-    private float jumpSpeed = -3.0f * Game.SCALE;
-    private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
+    private final float jumpSpeed = -3.0f * Game.SCALE;
+    private final float fallSpeedAfterCollision = 0.5f * Game.SCALE;
     private boolean inAir = false;
     //endregion
 
     //region Health Bar
-    private BufferedImage statusBarImg;
+    private final BufferedImage statusBarImg;
     //max lives in match
-    private int lives = 3;
+    private final int lives = 3;
     private int healthPercent = 0;
 
-    private int statusBarWidth = (int)(192 * Game.SCALE);
-    private int statusBarHeight = (int)(58 * Game.SCALE);
-    private int statusBarX = (int)(10 * Game.SCALE);
-    private int statusBarY = (int)(10 * Game.SCALE);
+    private final int statusBarWidth = (int)(192 * Game.SCALE);
+    private final int statusBarHeight = (int)(58 * Game.SCALE);
+    private final int statusBarX = (int)(10 * Game.SCALE);
+    private final int statusBarY = (int)(10 * Game.SCALE);
 
     private int healthBarWidth = (int)(150 * Game.SCALE);
     private int healthBarHeight = (int)(4 * Game.SCALE);
@@ -293,7 +294,6 @@ public class Player extends Entity{
     //endregion
 
     public void render(Graphics g){
-
         g.drawImage(animations[playerAction][aniIndex], (int)(hitBox.x - playerCharacter.xDrawOffset + flipX), (int)(hitBox.y - playerCharacter.yDrawOffset), width * flipW, height, null);
         drawHitbox(g);
         drawAttackBox(g);
@@ -435,23 +435,20 @@ public class Player extends Entity{
             inAir = true;
     }
 
+    public void setHealth(int health){
+        this.healthPercent = health;
+    }
     public void setAttacking(boolean attacking){
         this.attacking=attacking;
     }
-
     public void setPlayerAction(int playerAction){
         this.playerAction = playerAction;
     }
-
     public void setDashActiveCheck(boolean dashActiveCheck){
         this.dashActiveCheck = dashActiveCheck;
     }
-
     public Boolean getInvincibility() {return invincibility;}
-
-    public void setInvincibility(Boolean invincibility) {
-        this.invincibility = invincibility;
-    }
+    public void setInvincibility(Boolean invincibility) {this.invincibility = invincibility;}
 
     //region Movement
     public void resetDirBooleans(){
@@ -521,18 +518,21 @@ public class Player extends Entity{
     public boolean getProjectileAttack() {
         return projectileAttack;
     }
-
     public void setProjectileAttack(boolean projectileAttack) {
         this.projectileAttack = projectileAttack;
     }
     public int getFlipW() {
         return flipW;
     }
-    public MouseEvent getLastMouseEvent() {
-        return lastMouseEvent;
+    public MouseEvent getLastMouseEvent() {return lastMouseEvent;}
+    public Playing getPlaying() {return playing;}
+    public int getHealth() {return healthPercent;}
+    public int getLives() {return lives;}
+    public void setFlipW(int flipW) {this.flipW = flipW;}
+    //region Network
+    // Called by Server.applyClientInput() to set remote input safely
+    public void setRemoteInputForOtherPlayer(boolean left, boolean right, boolean up, boolean down, boolean jump, boolean attack){
+        // either convert to mask and call playing.setRemoteInputMask(mask)
     }
-
-    public Playing getPlaying() {
-        return playing;
-    }
+    //endregion
 }

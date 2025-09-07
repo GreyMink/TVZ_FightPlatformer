@@ -12,9 +12,9 @@ import static main.Game.TILES_SIZE;
 
 public class LevelManager {
 
-    private Game game;
+    private final Game game;
     private BufferedImage[] levelSprite;
-    private ArrayList<Level> stages;
+    private final ArrayList<Level> stages;
     private int stageIndex = 0;
 
     public LevelManager(Game game){
@@ -32,14 +32,15 @@ public class LevelManager {
             Gamestate.state = Gamestate.MENU;
         }
         Level newStage = stages.get(stageIndex);
-        game.getPlaying().getPlayer().loadLvlData(newStage.getLvlData());
+        game.getPlaying().getHostPlayer().loadLvlData(newStage.getLvlData());
         game.getPlaying().getObjectManager().loadObjects(newStage);
     }
 
     public void loadStage(int stageIndex){
         this.stageIndex = stageIndex;
         Level newStage = stages.get(stageIndex);
-        game.getPlaying().getPlayer().loadLvlData(newStage.getLvlData());
+        game.getPlaying().getHostPlayer().loadLvlData(newStage.getLvlData());
+        game.getPlaying().getRemotePlayer().loadLvlData(newStage.getLvlData());
         game.getPlaying().getObjectManager().loadObjects(newStage);
     }
 

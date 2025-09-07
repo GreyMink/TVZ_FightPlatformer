@@ -2,7 +2,6 @@ package utils;
 
 import main.Game;
 
-import java.security.PublicKey;
 
 public class Constants {
 
@@ -68,11 +67,6 @@ public class Constants {
         public static final int DEAD = 6;
         public static final int DASH = 7;
 
-    }
-
-    public static class ImageConstants{
-        public static final int PLAYER_WIDTH = 64;
-        public static final int PLAYER_HEIGHT = 40;
     }
 
     public static class UI{
@@ -163,5 +157,9 @@ public class Constants {
 
         }
 
+    }
+
+    public static class NetworkConstants{
+        public static final int MAX_PLAYERS = 2;
     }
 }

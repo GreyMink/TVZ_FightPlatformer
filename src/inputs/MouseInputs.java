@@ -2,7 +2,6 @@ package inputs;
 
 import gamestates.Gamestate;
 import main.GamePanel;
-import ui.PauseOverlay;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -10,7 +9,7 @@ import java.awt.event.MouseMotionListener;
 
 public class MouseInputs implements MouseListener, MouseMotionListener {
 
-    private GamePanel gamePanel;
+    private final GamePanel gamePanel;
     public MouseInputs(GamePanel gamePanel){
         this.gamePanel = gamePanel;
     }

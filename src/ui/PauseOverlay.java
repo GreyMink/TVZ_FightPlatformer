@@ -12,8 +12,8 @@ import java.awt.image.BufferedImage;
 import static utils.Constants.UI.URMButtons.*;
 
 public class PauseOverlay {
-    private Playing playing;
-    private AudioOptions audioOptions;
+    private final Playing playing;
+    private final AudioOptions audioOptions;
     private BufferedImage backgroundImg;
     private int backgX, backgY, backgW, backgH;
     private UrmButton menuButton, rematchButton, unpauseButton;

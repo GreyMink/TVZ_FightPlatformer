@@ -3,6 +3,8 @@ package gamestates;
 import entities.PlayerCharacter;
 import levels.Level;
 import main.Game;
+import network.Client;
+import network.Server;
 import ui.MenuButton;
 import ui.SelectButton;
 import utils.LoadSave;
@@ -11,10 +13,11 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class Lobby extends State implements Statemethods{
+public class Lobby extends State implements StateMethods {
 
     //region Varijable
     private BufferedImage backgroundImg, backgroundImgBack;
@@ -28,9 +31,8 @@ public class Lobby extends State implements Statemethods{
     private ArrayList<Level> stagesList = new ArrayList<Level>(game.getPlaying().getLevelManager().getStages());
     private ArrayList<PlayerCharacter> playerCharacterList = new ArrayList<PlayerCharacter>(Arrays.asList(PlayerCharacter.values()));
 
-
-    private int stageIndex,characterIndex;
-
+    private int stageIndex = -1,
+            characterIndex = -1;
 
     private static final int BUTTON_WIDTH = 120;
     private static final int BUTTON_HEIGHT = 80;
@@ -40,6 +42,11 @@ public class Lobby extends State implements Statemethods{
     //Lista gumbi za određivanje stage i charactera
     private ArrayList<SelectButton> stagesButtons = new ArrayList<>();
     private ArrayList<SelectButton> characterButtons = new ArrayList<>();
+
+    private Server server;
+    private Client client;
+
+
     //endregion
 
     public Lobby(Game game) {
@@ -159,6 +166,16 @@ public class Lobby extends State implements Statemethods{
         }
     }
 
+    public Server getServer() {return server;}
+    public Client getClient() {return client;}
+    public int getStageIndex() {return stageIndex;}
+    public void setStageIndex(int stageIndex) {this.stageIndex = stageIndex;}
+    public int getCharacterIndex() {return characterIndex;}
+    public void setCharacterIndex(int characterIndex) {this.characterIndex = characterIndex;}
+    public ArrayList<PlayerCharacter> getPlayerCharacterList() {return playerCharacterList;}
+
+    public void setServerInstance(Server server) {this.server = server;}
+    public void setClientInstance(Client client) {this.client = client;}
 
     //region Inputs
     @Override
@@ -169,16 +186,35 @@ public class Lobby extends State implements Statemethods{
     @Override
     public void mousePressed(MouseEvent e) {
             if(isIn(e, startMatchButton)){
-                game.getPlaying().setPlayerCharacter(playerCharacterList.get(characterIndex));
-                game.getPlaying().resetAll();
-                System.out.println(playerCharacterList.get(characterIndex));
+                if (server != null) {
+                    //provjera da je odreden - default je -1
+                    if(characterIndex != -1 && stageIndex != -1){
+                        game.getPlaying().setPlayerCharacter(playerCharacterList.get(characterIndex));
+                        game.getPlaying().resetAll();
+                        System.out.println(playerCharacterList.get(characterIndex));
+                        startMatchButton.setMousePressed(true);
+                        server.setHostReady_CheckStart(true);
+                    }
+                } else if (client != null) {
+                    if(characterIndex != -1 && stageIndex != -1){
+                        client.sendReady();
+                        System.out.println("Client is Ready");
+                    }
+                }
+
+//                game.getPlaying().setPlayerCharacter(playerCharacterList.get(characterIndex));
+//                game.getPlaying().resetAll();
+//                System.out.println(playerCharacterList.get(characterIndex));
                 startMatchButton.setMousePressed(true);
             }
             for(SelectButton stagesButton : stagesButtons){
-                if(isIn(e, stagesButton)){
+                if(isIn(e, stagesButton) && client == null){
                     resetStageButtons();
                     stageIndex = stagesButton.getSelectIndex();
                     game.getPlaying().getLevelManager().setStageIndex(stageIndex);
+                    if(server != null) {
+                        server.broadcastStageSelection(stageIndex);
+                    }
                     stagesButton.setMousePressed(true);
                 }
 
@@ -188,6 +224,15 @@ public class Lobby extends State implements Statemethods{
                     resetCharacterButtons();
                     characterButton.setMousePressed(true);
                     characterIndex = characterButton.getSelectIndex();
+                    if (server != null) {
+                        try {
+                            server.broadcastCharacterSelection(0, characterIndex); // host player0
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else if (client != null) {
+                        client.sendCharacterSelection(characterIndex);
+                    }
                 }
             }
 
@@ -197,7 +242,10 @@ public class Lobby extends State implements Statemethods{
     public void mouseReleased(MouseEvent e) {
         if(isIn(e, startMatchButton)){
             if(startMatchButton.isMousePressed()){
-                startMatchButton.applyGameState();
+                if((server != null && server.getPlayersReady()) || (client != null && client.getPlayersReady())){
+                    startMatchButton.applyGameState();
+                }
+
             }
         }
         startMatchButton.resetBooleans();
@@ -213,8 +261,10 @@ public class Lobby extends State implements Statemethods{
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_ENTER){
-            Gamestate.state = Gamestate.PLAYING;
+        if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+            if(server!=null)
+                server.stop();
+            Gamestate.state = Gamestate.MENU;
         }
     }
 
@@ -222,5 +272,7 @@ public class Lobby extends State implements Statemethods{
     public void keyReleased(KeyEvent e) {
 
     }
+
+
     //endregion
 }

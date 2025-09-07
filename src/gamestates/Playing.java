@@ -16,20 +16,32 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-public class Playing extends State implements Statemethods{
-    private Player player;
+public class Playing extends State implements StateMethods {
+    private Player hostPlayer;
     private LevelManager levelManager;
     private ObjectManager objectManager;
-
     private PauseOverlay pauseOverlay;
     private GameOverOverlay gameOverOverlay;
     private MatchFinishedOverlay matchFinishedOverlay;
 
-    private BufferedImage backgroundImg;
+    private final BufferedImage backgroundImg;
 
+    //Game state / Player state variables
     private boolean paused = false;
     private boolean gameOver = false;
     private boolean matchEnd = false;
+
+    //region Network variables
+    private Player remotePlayer;// player 2 - kontrole preko network poruka
+    private volatile boolean isRemotePlayer = false;
+    private volatile int latestRemoteInputMask = 0; // set by Server thread (thread-safe primitive)
+    private volatile boolean networkControlled = false; // igra li se u networku
+
+        //info - network package - player pos
+    private volatile boolean hasNetworkState = false;
+    private volatile float net_p0x, net_p0y, net_p0vx, net_p0vy, net_p0health,
+            net_p1x, net_p1y, net_p1vx, net_p1vy, net_p1health;
+    //endregion
 
     public Playing(Game game) {
         super(game);
@@ -40,9 +52,12 @@ public class Playing extends State implements Statemethods{
     }
 
     public void loadNextStage(){
-
         levelManager.loadNextStage();
-        player.setSpawn(levelManager.getCurrentStage().getPlayerSpawn());
+        hostPlayer.setSpawn(levelManager.getCurrentStage().getPlayerSpawn());
+        if(remotePlayer != null){
+            remotePlayer.setSpawn(levelManager.getCurrentStage().getRemotePlayerSpawn());
+        }
+
         resetAll();
     }
 
@@ -54,20 +69,12 @@ public class Playing extends State implements Statemethods{
     private void initClasses() {
         levelManager = new LevelManager(game);
         objectManager = new ObjectManager(this);
-
-        //Default character
-        //setPlayerCharacter(PlayerCharacter.PIRATE);
-
         pauseOverlay = new PauseOverlay(this);
         gameOverOverlay = new GameOverOverlay(this);
         matchFinishedOverlay = new MatchFinishedOverlay(this);
     }
 
-    public void setPlayerCharacter(PlayerCharacter playerCharacter) {
-        player = new Player(playerCharacter, this);
-        player.loadLvlData(levelManager.getCurrentStage().getLvlData());
-        player.setSpawn(levelManager.getCurrentStage().getPlayerSpawn());
-    }
+
 
     @Override
     public void update() {
@@ -77,8 +84,13 @@ public class Playing extends State implements Statemethods{
             matchFinishedOverlay.update();
         }else if(!gameOver){
             levelManager.update();
-            player.update();
-            objectManager.update(levelManager.getCurrentStage().getLvlData(), player);
+
+            applyRemoteInput();
+
+            hostPlayer.update();
+            remotePlayer.update();
+            objectManager.update(levelManager.getCurrentStage().getLvlData(), hostPlayer);
+            objectManager.update(levelManager.getCurrentStage().getLvlData(), remotePlayer);
         }
     }
 
@@ -87,7 +99,8 @@ public class Playing extends State implements Statemethods{
         g.drawImage(backgroundImg, 0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT,null);
 
         levelManager.draw(g);
-        player.render(g);
+        hostPlayer.render(g);
+        remotePlayer.render(g);
         objectManager.draw(g);
 
         if(paused){
@@ -103,28 +116,58 @@ public class Playing extends State implements Statemethods{
         gameOver = false;
         paused = false;
         matchEnd = false;
-        player.resetAll();
+        hostPlayer.resetAll();
+        remotePlayer.resetAll();
         objectManager.resetAllObjects();
     }
 
-    public void setGameOver(boolean gameOver){this.gameOver = gameOver;}
+    public void checkEnemyHit(Rectangle2D.Float attackBox){/*enemyManager.checkEnemyHit(attackBox);*/}
 
-    public void setMatchEnd(boolean matchEnd){
-        this.matchEnd = matchEnd;
+    //region Network
+    public Player getRemotePlayer() {return remotePlayer;}
+    public void setRemotePlayer(Player remotePlayer) {this.remotePlayer = remotePlayer;}
+    public void setRemoteInputMask(int mask) {this.latestRemoteInputMask = mask;}
+
+
+    // Pozvati u game update thread za određivanje inputa remoteplayera
+    private void applyRemoteInput() {
+        if(remotePlayer == null) return;
+        remotePlayer.setLeft((latestRemoteInputMask & (1<<0)) != 0);
+        remotePlayer.setRight((latestRemoteInputMask & (1<<1)) != 0);
+        remotePlayer.setUp((latestRemoteInputMask & (1<<2)) != 0);
+        remotePlayer.setDown((latestRemoteInputMask & (1<<3)) != 0);
+        remotePlayer.setJump((latestRemoteInputMask & (1<<4)) != 0);
+        if((latestRemoteInputMask & (1<<5)) != 0){
+            remotePlayer.setAttacking(true);
+        } else {
+            remotePlayer.setAttacking(false);
+        }
     }
 
-    public void checkEnemyHit(Rectangle2D.Float attackBox){
-        //enemyManager.checkEnemyHit(attackBox);
+    public void applyNetworkStateFromServer(float p0x, float p0y, float p0vx, float p0vy, float p0health, float p1x, float p1y, float p1vx, float p1vy, float p1health) {
+        this.net_p0x = p0x;
+        this.net_p0y = p0y;
+        this.net_p0vx = p0vx;
+        this.net_p0vy = p0vy;
+        this.net_p0health = p0health;
+
+        this.net_p1x = p1x;
+        this.net_p1y = p1y;
+        this.net_p1vx = p1vx;
+        this.net_p1vy = p1vy;
+        this.net_p1health = p1health;
     }
+    //endregion
+
 
     //region Inputs
     @Override
     public void mouseClicked(MouseEvent e) {
         if(!gameOver){
             if(e.getButton() == MouseEvent.BUTTON1){
-                player.setAttacking(true);
+                hostPlayer.setAttacking(true);
             }else if(e.getButton() == MouseEvent.BUTTON3){
-                player.powerAttack(e);
+                hostPlayer.powerAttack(e);
             }
         }
     }
@@ -176,25 +219,25 @@ public class Playing extends State implements Statemethods{
         }else{
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_A:
-                    player.setLeft(true);
+                    hostPlayer.setLeft(true);
                     break;
                 case KeyEvent.VK_D:
-                    player.setRight(true);
+                    hostPlayer.setRight(true);
                     break;
                 case KeyEvent.VK_W:
-                    player.setUp(true);
+                    hostPlayer.setUp(true);
                     break;
                 case KeyEvent.VK_S:
-                    player.setDown(true);
+                    hostPlayer.setDown(true);
                     break;
                 case KeyEvent.VK_SPACE:
-                    player.setJump(true);
+                    hostPlayer.setJump(true);
                     break;
                 case KeyEvent.VK_ESCAPE:
                     paused = !paused;
                     break;
                 case KeyEvent.VK_SHIFT:
-                    player.dashMove();
+                    hostPlayer.dashMove();
                     break;
                 case KeyEvent.VK_P:
                     setMatchEnd(true);
@@ -208,22 +251,22 @@ public class Playing extends State implements Statemethods{
         if(!gameOver){
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_A:
-                    player.setLeft(false);
+                    hostPlayer.setLeft(false);
                     break;
                 case KeyEvent.VK_D:
-                    player.setRight(false);
+                    hostPlayer.setRight(false);
                     break;
                 case KeyEvent.VK_W:
-                    player.setUp(false);
+                    hostPlayer.setUp(false);
                     break;
                 case KeyEvent.VK_S:
-                    player.setDown(false);
+                    hostPlayer.setDown(false);
                     break;
                 case KeyEvent.VK_SPACE:
-                    player.setJump(false);
+                    hostPlayer.setJump(false);
                     break;
                 case KeyEvent.VK_SHIFT:
-                    player.dashMove();
+                    hostPlayer.dashMove();
                     break;
             }
         }
@@ -231,27 +274,42 @@ public class Playing extends State implements Statemethods{
     }
     //endregion
 
-    public Player getPlayer(){
-        return player;
-    }
-
+    //region Getters, Setters, Extensions
+    public Player getHostPlayer(){return hostPlayer;}
     public LevelManager getLevelManager(){return levelManager;}
-
     public ObjectManager getObjectManager(){return objectManager;}
 
-    public void WindowFocusLost(){
-        player.resetDirBooleans();
+    public void setPlayerCharacter(PlayerCharacter playerCharacter) {
+        hostPlayer = new Player(playerCharacter, this);
+        hostPlayer.loadLvlData(levelManager.getCurrentStage().getLvlData());
+        Point spawn = levelManager.getCurrentStage().getPlayerSpawn();
+        hostPlayer.setSpawn(spawn);
+        System.out.println("SERVER hostPlayer spawn: "+spawn);
+//        hostPlayer.setSpawn(levelManager.getCurrentStage().getPlayerSpawn());
     }
 
-    public void unpauseGame(){
-        paused = false;
+    public void setRemotePlayerCharacter(PlayerCharacter playerCharacter) {
+        remotePlayer = new Player(playerCharacter, this);
+        remotePlayer.loadLvlData(levelManager.getCurrentStage().getLvlData());
+        Point spawn =levelManager.getCurrentStage().getRemotePlayerSpawn();
+        remotePlayer.setSpawn(spawn);
+        System.out.println("[server] remote player created: "+spawn);
+//        remotePlayer.setSpawn(levelManager.getCurrentStage().getRemotePlayerSpawn());
     }
 
+    public void setGameOver(boolean gameOver){this.gameOver = gameOver;}
+    public void setMatchEnd(boolean matchEnd){
+        this.matchEnd = matchEnd;
+    }
     public void checkObjectHit(Rectangle2D.Float attackBox) {
         objectManager.checkObjectHit(attackBox);
     }
-
-    public void checkTrapCollision(Player player) {
-        objectManager.checkTrapCollision(player);
+    public void checkTrapCollision(Player player) {objectManager.checkTrapCollision(player);}
+//    public void WindowFocusLost(){
+//        player.resetDirBooleans();
+//    }
+    public void unpauseGame(){
+        paused = false;
     }
+    //endregion
 }
