@@ -89,6 +89,8 @@ public class Playing extends State implements StateMethods {
 
             hostPlayer.update();
             remotePlayer.update();
+            sendHostPlayerInput();
+
             objectManager.update(levelManager.getCurrentStage().getLvlData(), hostPlayer);
             objectManager.update(levelManager.getCurrentStage().getLvlData(), remotePlayer);
         }
@@ -143,7 +145,24 @@ public class Playing extends State implements StateMethods {
             remotePlayer.setAttacking(false);
         }
     }
+    private void sendHostPlayerInput(){
+        int mask = 0;
+        if (hostPlayer.isLeft())   mask |= (1<<0);
+        if (hostPlayer.isRight())  mask |= (1<<1);
+        if (hostPlayer.isUp())     mask |= (1<<2);
+        if (hostPlayer.isDown())   mask |= (1<<3);
+        if (hostPlayer.isJump())   mask |= (1<<4);
+        if (hostPlayer.isAttacking()) mask |= (1<<5);
 
+        if(game.getLobby().getServer() != null){
+            game.getLobby().getServer().sendInput(System.nanoTime(), mask);
+        }
+        if(game.getLobby().getClient() != null){
+            game.getLobby().getClient().sendInput(System.nanoTime(), mask);
+        }
+
+
+    }
     public void applyNetworkStateFromServer(float p0x, float p0y, float p0vx, float p0vy, float p0health, float p1x, float p1y, float p1vx, float p1vy, float p1health) {
         this.net_p0x = p0x;
         this.net_p0y = p0y;

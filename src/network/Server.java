@@ -143,6 +143,18 @@ public class Server {
             game.getPlaying().setRemoteInputMask(mask);
         }
     }
+    public void sendInput(long seq, int mask) {
+        if (dos == null) return;
+        try {
+            dos.writeByte(NetworkProtocol.TYPE_INPUT);
+            dos.writeLong(seq);
+            dos.writeInt(mask);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            closeClient();
+        }
+    }
 
     private void sendStateSnapshot(DataOutputStream dos) throws IOException {
         // Build snapshot from the server's authoritative state

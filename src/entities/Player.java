@@ -23,6 +23,7 @@ public class Player extends Entity{
     private final int aniSpeed = 15;
     private int playerAction = IDLE;
     private boolean moving = false;
+
     private boolean attacking = false;
     private boolean projectileAttack = false;
 
@@ -435,9 +436,8 @@ public class Player extends Entity{
             inAir = true;
     }
 
-    public void setHealth(int health){
-        this.healthPercent = health;
-    }
+    public void setHealth(int health){this.healthPercent = health;}
+    public boolean isAttacking() {return attacking;}
     public void setAttacking(boolean attacking){
         this.attacking=attacking;
     }
@@ -475,38 +475,15 @@ public class Player extends Entity{
 
     }
 
-    public boolean isUp() {
-        return up;
-    }
-
-    public boolean isLeft() {
-        return left;
-    }
-
-    public boolean isRight() {
-        return right;
-    }
-
-    public boolean isDown() {
-        return down;
-    }
-
-    public void setLeft(boolean left) {
-        this.left = left;
-    }
-
-    public void setUp(boolean up) {
-        this.up = up;
-    }
-
-    public void setDown(boolean down) {
-        this.down = down;
-    }
-
-    public void setRight(boolean right) {
-        this.right = right;
-    }
-
+    public boolean isUp() {return up;}
+    public boolean isLeft() {return left;}
+    public boolean isRight() {return right;}
+    public boolean isDown() {return down;}
+    public boolean isJump() {return jump;}
+    public void setLeft(boolean left) {this.left = left;}
+    public void setUp(boolean up) {this.up = up;}
+    public void setDown(boolean down) {this.down = down;}
+    public void setRight(boolean right) {this.right = right;}
     public void setJump(boolean jump) {this.jump = jump;}
     //endregion
 

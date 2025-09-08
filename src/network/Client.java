@@ -70,6 +70,13 @@ public class Client {
                 while (running && !tcpSocket.isClosed()) {
                     byte type = dis.readByte();
                     switch (type) {
+                        case TYPE_INPUT -> {
+                            long seq = dis.readLong();
+                            int mask = dis.readInt();
+                            // parse optional floats if you used them
+                            // Apply client input to remote player (player index 1)
+                            applyServerInput(mask);
+                        }
                         case TYPE_STATE -> {
 //                            long tick = dis.readLong();
                             float p0x = dis.readFloat();
@@ -82,11 +89,6 @@ public class Client {
 //                            float p1vx = dis.readFloat();
 //                            float p1vy = dis.readFloat();
                             float p1health = dis.readFloat();
-
-                            // Update local representation: host is p0, remote is p1
-                            // Must apply on game thread: use a thread-safe setter or schedule on main thread
-//                            game.getPlaying().applyNetworkStateFromServer(p0x,p0y,p0vx,p0vy,p0health,
-//                                    p1x,p1y,p1vx,p1vy,p1health);
                         }
                         case TYPE_CHAR_SELECT -> {
                             int playerIndex = dis.readInt();
@@ -119,6 +121,12 @@ public class Client {
                 disconnect();
             }
         });
+    }
+
+    private void applyServerInput(int mask) {
+        if (game.getPlaying() != null) {
+            game.getPlaying().setRemoteInputMask(mask);
+        }
     }
 
     // send input (bitmask)
