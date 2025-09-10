@@ -29,7 +29,7 @@ public class Client {
         this.playing = game.getPlaying();
     }
 
-    // Discover servers by listening to UDP announce packets for a short time
+    // Otkrivanje servera UDP protokolom
     public ArrayList<DiscoveredServer> discoverServers(int timeoutMs) throws IOException {
         ArrayList<DiscoveredServer> servers = new ArrayList<>();
         DatagramSocket sock = new DatagramSocket(8888);
@@ -46,11 +46,10 @@ public class Client {
                 int current = dis.readInt();
                 int max = dis.readInt();
                 DiscoveredServer ds = new DiscoveredServer(packet.getAddress().getHostAddress(), port, name, current, max);
-                // avoid duplicates
+                // provjera duplikata
                 boolean exists = servers.stream().anyMatch(s -> s.address.equals(ds.address) && s.port == ds.port);
                 if (!exists) servers.add(ds);
             } catch (SocketTimeoutException ignored) {
-                // break if nothing else
                 break;
             }
         }
@@ -192,6 +191,21 @@ public class Client {
 
         public DiscoveredServer(String address, int port, String name, int current, int max){
             this.address = address; this.port = port; this.name = name; this.current = current; this.max = max;
+        }
+
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof DiscoveredServer other)) return false;
+            return port == other.port &&
+                    Objects.equals(address, other.address) &&
+                    Objects.equals(name, other.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, address, port);
         }
 
         @Override

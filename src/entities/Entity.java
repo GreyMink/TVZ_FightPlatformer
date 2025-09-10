@@ -27,8 +27,13 @@ public abstract class Entity {
         g.drawRect((int) hitBox.x,(int) hitBox.y,(int) hitBox.width,(int) hitBox.height);
     }
 
-    protected void initHitBox(int width, int height) {
-        hitBox = new Rectangle2D.Float(x,y,(int)(width * Game.SCALE),(int)(height * Game.SCALE));
+    protected void initHitBox(Rectangle2D.Float hitBox) {
+        this.hitBox = new Rectangle2D.Float(
+                //hitBox.x i hitBox.y su offset
+                hitBox.x,
+                hitBox.y,
+                hitBox.width,
+                hitBox.height);
     }
 
     public void setKO(Boolean knockedOut){

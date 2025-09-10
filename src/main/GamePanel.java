@@ -16,7 +16,6 @@ public class GamePanel extends JPanel {
     private final Game game;
 
     public GamePanel(Game game) {
-
         mouseInputs = new MouseInputs(this);
         this.game = game;
 
@@ -26,24 +25,18 @@ public class GamePanel extends JPanel {
         addMouseMotionListener(mouseInputs);
     }
 
-
-
     private void setPanelSize() {
         Dimension size = new Dimension(GAME_WIDTH, GAME_HEIGHT);
         setPreferredSize(size);
         System.out.println("size: " + GAME_WIDTH + " : " + GAME_HEIGHT);
     }
 
-
     public void paintComponent(Graphics g) {
         super.paintComponent(g); //super poziva "super" klasu JComponent da izgenerira paintComponent kako bi postavio (reset) radnu površinu
-
         game.render(g);
     }
 
     public Game getGame(){
         return game;
     }
-
-
 }

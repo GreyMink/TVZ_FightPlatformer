@@ -129,7 +129,7 @@ public class Lobby extends State implements StateMethods {
 
             for(int col = 0; col < buttonsInRow; col++){
                 int x = startX + col * (BUTTON_WIDTH + GAP);
-                characterButtons.add(new SelectButton(x, currentYCharacters, BUTTON_WIDTH, BUTTON_HEIGHT, col, LoadSave.GetSpriteAtlas(playerCharacterList.get(i).getSelectImage())));
+                characterButtons.add(new SelectButton(x, currentYCharacters, BUTTON_WIDTH, BUTTON_HEIGHT, i, LoadSave.GetSpriteAtlas(playerCharacterList.get(i).getSelectImage())));
                 i++;
             }
             currentYCharacters += BUTTON_HEIGHT + GAP;

@@ -15,14 +15,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class Playing extends State implements StateMethods {
     private Player hostPlayer;
+
+    //region States
     private LevelManager levelManager;
     private ObjectManager objectManager;
     private PauseOverlay pauseOverlay;
     private GameOverOverlay gameOverOverlay;
     private MatchFinishedOverlay matchFinishedOverlay;
+    //endregion
 
     private final BufferedImage backgroundImg;
 
@@ -33,9 +37,7 @@ public class Playing extends State implements StateMethods {
 
     //region Network variables
     private Player remotePlayer;// player 2 - kontrole preko network poruka
-    private volatile boolean isRemotePlayer = false;
-    private volatile int latestRemoteInputMask = 0; // set by Server thread (thread-safe primitive)
-    private volatile boolean networkControlled = false; // igra li se u networku
+    private volatile int latestRemoteInputMask = 0; // set by Server thread
 
         //info - network package - player pos
     private volatile boolean hasNetworkState = false;
@@ -50,32 +52,6 @@ public class Playing extends State implements StateMethods {
         backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.TEMPLE_STAGE_BACKGROUND);
         loadStageObjects();
     }
-
-    public void loadNextStage(){
-        levelManager.loadNextStage();
-        hostPlayer.setSpawn(levelManager.getCurrentStage().getPlayerSpawn());
-        if(remotePlayer != null){
-            remotePlayer.setSpawn(levelManager.getCurrentStage().getRemotePlayerSpawn());
-        }
-
-        resetAll();
-    }
-
-    private void loadStageObjects() {
-        objectManager.loadObjects(levelManager.getCurrentStage());
-    }
-
-
-    private void initClasses() {
-        levelManager = new LevelManager(game);
-        objectManager = new ObjectManager(this);
-        pauseOverlay = new PauseOverlay(this);
-        gameOverOverlay = new GameOverOverlay(this);
-        matchFinishedOverlay = new MatchFinishedOverlay(this);
-    }
-
-
-
     @Override
     public void update() {
         if(paused){
@@ -113,6 +89,23 @@ public class Playing extends State implements StateMethods {
             matchFinishedOverlay.draw(g);
         }
     }
+    private void initClasses() {
+        levelManager = new LevelManager(game);
+        objectManager = new ObjectManager(this);
+        pauseOverlay = new PauseOverlay(this);
+        gameOverOverlay = new GameOverOverlay(this);
+        matchFinishedOverlay = new MatchFinishedOverlay(this);
+    }
+    public void loadNextStage(){
+        levelManager.loadNextStage();
+        hostPlayer.setSpawn(levelManager.getCurrentStage().getPlayerSpawn());
+        if(remotePlayer != null){
+            remotePlayer.setSpawn(levelManager.getCurrentStage().getRemotePlayerSpawn());
+        }
+        resetAll();
+    }
+
+    private void loadStageObjects() {objectManager.loadObjects(levelManager.getCurrentStage());}
 
     public void resetAll(){
         gameOver = false;
@@ -160,8 +153,6 @@ public class Playing extends State implements StateMethods {
         if(game.getLobby().getClient() != null){
             game.getLobby().getClient().sendInput(System.nanoTime(), mask);
         }
-
-
     }
     public void applyNetworkStateFromServer(float p0x, float p0y, float p0vx, float p0vy, float p0health, float p1x, float p1y, float p1vx, float p1vy, float p1health) {
         this.net_p0x = p0x;
@@ -289,7 +280,6 @@ public class Playing extends State implements StateMethods {
                     break;
             }
         }
-
     }
     //endregion
 

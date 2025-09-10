@@ -8,7 +8,8 @@ public class BasicAttack extends BaseAttack{
     private AttackData attackData;
 
     public BasicAttack(AttackData attackData){
-        super(attackData.name, attackData.damage, attackData.knockback, attackData.startupFrames, attackData.activeFrames, attackData.recoveryFrames, attackData.hitbox);
+        super(attackData.name, attackData.damage, attackData.knockback, attackData.startupFrames,
+                attackData.activeFrames, attackData.recoveryFrames, attackData.hitbox);
         this.attackData=attackData;
     }
 

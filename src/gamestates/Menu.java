@@ -23,7 +23,6 @@ public class Menu extends State implements StateMethods {
         loadButtons();
         loadBackground();
         loadBackgroundBack();
-
     }
 
     private void loadBackgroundBack() {
@@ -40,7 +39,6 @@ public class Menu extends State implements StateMethods {
 
     private void loadButtons() {
         buttons[0] = new MenuButton(Game.GAME_WIDTH / 2, (int) (150 * Game.SCALE), 0, Gamestate.SELECT_LOBBY);
-        //buttons[1] = new MenuButton(Game.GAME_WIDTH / 2, (int) (220 * Game.SCALE), 1, Gamestate.OPTIONS);
         buttons[1] = new MenuButton(Game.GAME_WIDTH / 2, (int) (220 * Game.SCALE), 1, Gamestate.SERVER_SELECT);
         buttons[2] = new MenuButton(Game.GAME_WIDTH / 2, (int) (290 * Game.SCALE), 2, Gamestate.QUIT);
     }
@@ -54,7 +52,6 @@ public class Menu extends State implements StateMethods {
             if(game.getLobby().getClient() != null){
                 game.getLobby().getClient().disconnect();
             }
-
             if(game.getLobby().getServer() != null)
                 game.getLobby().getServer().stop();
         }
@@ -101,13 +98,9 @@ public class Menu extends State implements StateMethods {
 
                             Server myServer = new Server(game, 7777);
                             myServer.start();
-                            game.getLobby().setServerInstance(myServer); // so lobby can stop server on exit
-                            // Set local player as player0 and create remote placeholder
-//                            game.getPlaying().setPlayerCharacter(PlayerCharacter.PIRATE); // local player
-//                            game.getPlaying().setRemotePlayer(new Player(PlayerCharacter.SOLDIER, game.getPlaying())); // placeholder
+                            game.getLobby().setServerInstance(myServer);
                         } catch (IOException exception) {
                             exception.printStackTrace();
-                            // show error dialog
                         }
                         //endregion
                     }
@@ -122,11 +115,9 @@ public class Menu extends State implements StateMethods {
                             Client myClient = new Client(game);
                             game.getServerSelect().setClientInstance(myClient);
                         } finally {
-
                         }
                         //endregion
                     }
-
                     menuButton.applyGameState();
                 }
                 break;

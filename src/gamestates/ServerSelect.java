@@ -6,12 +6,14 @@ import ui.MenuButton;
 import ui.SelectButton;
 import ui.ServerButton;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,8 +28,6 @@ public class ServerSelect extends State implements StateMethods {
     private ArrayList<Client.DiscoveredServer> servers;
     private Client client;
     private ScheduledExecutorService discoveryExecutor;
-    private long lastDiscoveryTime = 0;
-    private static final int DISCOVERY_INTERVAL = 1000;
     private int serverIndex;
 
     private ArrayList<ServerButton> serverButtons = new ArrayList<>();
@@ -40,7 +40,6 @@ public class ServerSelect extends State implements StateMethods {
 
     public ServerSelect(Game game) {
         super(game);
-
         loadButtons();
         loadBackgrounds();
     }
@@ -69,9 +68,6 @@ public class ServerSelect extends State implements StateMethods {
 
     private void loadBackgrounds() {
         serverImgBack = new BufferedImage(Game.GAME_WIDTH, Game.GAME_HEIGHT, BufferedImage.TYPE_INT_RGB);
-
-//        menuX = Game.GAME_WIDTH / 2 - menuWidth / 2;
-//        menuY = (int) (45 * Game.SCALE);
     }
 
     private void loadButtons() {
@@ -100,24 +96,26 @@ public class ServerSelect extends State implements StateMethods {
     }
 
     private void rebuildServerButtons() {
+        int oldSelectedIndex = serverIndex;
+
         serverButtons.clear();
         int halfWidth = Game.GAME_WIDTH / 2;
         int xServerSelect = Game.GAME_WIDTH / 4;
         int yServerOffset = (int) (80 * Game.SCALE);
 
-
         System.out.println("Server Select:" + servers.getFirst().getName());
-
         for (int i = 0; i < servers.size(); i++) {
-            serverButtons.add(new ServerButton(
+            ServerButton button = new ServerButton(
                     xServerSelect,
                     ((i + 1) * yServerOffset) + GAP,
                     halfWidth,
                     BUTTON_HEIGHT,
                     i,
                     servers.get(i).getName()
-                ));
-
+                );
+            if(i == oldSelectedIndex) {
+                serverButtons.add(button);
+            }
         }
     }
 
@@ -127,38 +125,39 @@ public class ServerSelect extends State implements StateMethods {
         }
     }
 
-//    public void startDiscovery() {
-//        if (client == null) return;
+    public void startDiscovery() {
+        if (client == null) return;
 //        stopDiscovery();
-//        System.out.println("Start discovery");
-//
-//        discoveryExecutor = Executors.newSingleThreadScheduledExecutor();
-//        discoveryExecutor.scheduleAtFixedRate(() -> {
-//            try {
-//                System.out.println("Discovery attempt");
-//                ArrayList<Client.DiscoveredServer> discovered = client.discoverServers(1000);
-//                synchronized (this) {
-//                    if(servers == null || !servers.containsAll(discovered)){
-//                        servers = discovered;
-//                        System.out.println("Servers: " + discovered);
-//                        rebuildServerButtons();
-//                    }
-//
-//                }
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }, 0, 2, TimeUnit.SECONDS); // refresh every 2s
-//    }
+        System.out.println("Start discovery");
 
-//    public void stopDiscovery() {
-//        if (discoveryExecutor != null && !discoveryExecutor.isShutdown()) {
-//            discoveryExecutor.shutdownNow();
-//        }
-//    }
+        discoveryExecutor = Executors.newSingleThreadScheduledExecutor();
+        discoveryExecutor.scheduleAtFixedRate(() -> {
+            try {
+                System.out.println("Discovery attempt");
+                ArrayList<Client.DiscoveredServer> discovered = client.discoverServers(1000);
+                synchronized (this) {
+                    if(servers == null || !servers.equals(discovered)){
+                        SwingUtilities.invokeLater(() -> {
+                            servers = discovered;
+                            System.out.println("Servers: " + discovered);
+                            rebuildServerButtons();
+                        });
 
-    public void setClientInstance(Client client){this.client = client;}
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 0, 5, TimeUnit.SECONDS); // refresh every 5s
+    }
+
+    public void stopDiscovery() {
+        if (discoveryExecutor != null && !discoveryExecutor.isShutdown()) {
+            discoveryExecutor.shutdownNow();
+        }
+    }
+
+    public void setClientInstance(Client client){this.client = client;startDiscovery();}
     public void setServers(ArrayList<Client.DiscoveredServer> servers) {this.servers = servers;}
 
     //region Inputs
@@ -172,18 +171,16 @@ public class ServerSelect extends State implements StateMethods {
         for(MenuButton button : menuButtons) {
             if(isIn(e, button)){
                 if(button.getState() == Gamestate.SELECT_LOBBY){
-                    //UMETNI KOD ZA SLANJE PODATAKA SERVERU SA ODABRANIM INDEKSOM/ADRESSOM
                     try {
                         System.out.println("Server connect:" + servers.get(serverIndex).getName());
                         client.connect(servers.get(serverIndex).getAddress(),servers.get(serverIndex).getPort());
                         button.setMousePressed(true);
                         game.getLobby().setClientInstance(client);
+                        stopDiscovery();
                         button.applyGameState();
                     } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
-
-
                 }else if(button == menuButtons[0]){
                     button.setMousePressed(true);
                     break;
@@ -248,7 +245,6 @@ public class ServerSelect extends State implements StateMethods {
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-
         }
     }
 

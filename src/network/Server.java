@@ -75,7 +75,6 @@ public class Server {
                 e.printStackTrace();
             }
         }, 0, 1, TimeUnit.SECONDS);
-
     }
 
     private void handleClient(Socket socket) throws IOException {
@@ -83,8 +82,6 @@ public class Server {
             DataInputStream dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 
-            // Optionally exchange join/accept
-            // Now spawn reader thread for incoming messages
             executor.submit(() -> {
                 try {
                     while (running.get() && !socket.isClosed()) {
@@ -93,18 +90,12 @@ public class Server {
                             case TYPE_INPUT -> {
                                 long seq = dis.readLong();
                                 int mask = dis.readInt();
-                                // parse optional floats if you used them
-                                // Apply client input to remote player (player index 1)
                                 applyClientInput(mask);
-                            }
-                            case TYPE_PING -> {
-                                long t = dis.readLong();
                             }
                             case TYPE_CHAR_SELECT -> {
                                 int playerIndex = dis.readInt();
                                 int charIndex = dis.readInt();
 //                                System.out.println("Client send char data: "+ playerIndex + " " + charIndex);
-
                                 game.getPlaying().setRemotePlayerCharacter(game.getLobby().getPlayerCharacterList().get(charIndex));
                                 broadcastCharacterSelection(1, charIndex);
                             }
@@ -113,17 +104,13 @@ public class Server {
                                 setClientReady(ready);
                             }
                             case TYPE_EXIT_PLAY ->{
-
                             }
-
                         }
                     }
                 } catch (IOException e) {
                     if (running.get()) e.printStackTrace();
                 }
             });
-
-            // Server main loop: periodically send STATE snapshots
             while (running.get() && !socket.isClosed()) {
 //                sendStateSnapshot(dos);
                 // 20 updates/sec

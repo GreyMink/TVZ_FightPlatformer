@@ -75,7 +75,6 @@ public class Game implements Runnable{
             case SERVER_SELECT -> serverSelect.draw(g);
             case OPTIONS -> gameOptions.draw(g);
         }
-
     }
 
     //GameLoop

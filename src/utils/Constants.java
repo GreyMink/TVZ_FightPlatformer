@@ -24,7 +24,6 @@ public class Constants {
         public static final int BARREL = 2;
         public static final int SPIKE = 3;
 
-
         public static final int CONTAINER_WIDTH_DEFAULT = 40;
         public static final int CONTAINER_HEIGHT_DEFAULT = 30;
         public static final int CONTAINER_WIDTH = (int) (Game.SCALE * CONTAINER_WIDTH_DEFAULT);
@@ -100,7 +99,7 @@ public class Constants {
 
     public static class EnemyConstants{
         //enemy types
-        public static final int CRABBY = 0;
+        public static final int ENEMY = 0;
 
         //enemy states
         public static final int IDLE = 0;
@@ -109,19 +108,19 @@ public class Constants {
         public static final int HIT = 3;
         public static final int DEAD = 4;
 
-        //crabby dimensions
-        public static final int CRABBY_WIDTH_DEFAULT = 72;
-        public static final int CRABBY_HEIGHT_DEFAULT = 32;
-        public static final int CRABBY_WIDTH = (int) (CRABBY_WIDTH_DEFAULT * Game.SCALE);
-        public static final int CRABBY_HEIGHT = (int) (CRABBY_HEIGHT_DEFAULT * Game.SCALE);
+        //ENEMY dimensions
+        public static final int ENEMY_WIDTH_DEFAULT = 72;
+        public static final int ENEMY_HEIGHT_DEFAULT = 32;
+        public static final int ENEMY_WIDTH = (int) (ENEMY_WIDTH_DEFAULT * Game.SCALE);
+        public static final int ENEMY_HEIGHT = (int) (ENEMY_HEIGHT_DEFAULT * Game.SCALE);
 
         //razlike početka sprita/hitboxa od početka img
-        public static final int CRABBY_DRAWOFFSET_X = (int)(26 * Game.SCALE);
-        public static final int CRABBY_DRAWOFFSET_Y = (int)(9 * Game.SCALE);
+        public static final int ENEMY_DRAWOFFSET_X = (int)(26 * Game.SCALE);
+        public static final int ENEMY_DRAWOFFSET_Y = (int)(9 * Game.SCALE);
 
         public static int GetMaxHealth(int enemy_type){
             switch (enemy_type){
-                case CRABBY:
+                case ENEMY:
                     return 10;
                 default:
                     return 1;
@@ -130,7 +129,7 @@ public class Constants {
 
         public static int GetEnemyDamage(int enemy_type){
             switch (enemy_type){
-                case CRABBY:
+                case ENEMY:
                     return 15;
                 default:
                     return 0;
@@ -139,7 +138,7 @@ public class Constants {
 
         public static int GetSpriteAmount(int enemy_type, int enemy_state){
             switch (enemy_type){
-                case CRABBY:
+                case ENEMY:
                     switch (enemy_state){
                         case IDLE:
                             return 9;
@@ -154,9 +153,7 @@ public class Constants {
                     }
             }
             return 0;
-
         }
-
     }
 
     public static class NetworkConstants{

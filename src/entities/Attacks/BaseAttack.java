@@ -39,15 +39,12 @@ public abstract class BaseAttack {
     public boolean isActive() {
         return active;
     }
-
     public int getDamage() {
         return damage;
     }
-
     public int getKnockback() {
         return knockback;
     }
-
     public Rectangle2D.Float getHitbox() {
         return hitbox;
     }

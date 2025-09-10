@@ -26,7 +26,7 @@ public abstract class Enemy extends Entity {
     public Enemy(float x, float y, int width, int height, int enemyType) {
         super(x, y, width, height);
         this.enemyType = enemyType;
-        initHitBox(width,height);
+        initHitBox(new Rectangle2D.Float(x,y,width,height));
         maxHealth = GetMaxHealth(enemyType);
         currentHealth = maxHealth;
     }

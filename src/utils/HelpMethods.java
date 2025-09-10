@@ -55,7 +55,6 @@ public class HelpMethods {
 
     public static float GetEntityXPosNextToWall(Rectangle2D.Float hitBox,float xSpeed){
         int currentTile = (int)(hitBox.x / Game.TILES_SIZE);
-
         if(xSpeed > 0){
             //Desno
             int tileXPos = currentTile * Game.TILES_SIZE;
@@ -97,14 +96,6 @@ public class HelpMethods {
     //region ProjectileMovementChecking
     public static boolean isProjectileHittingStage(Projectile p, int[][] lvlData){
         return IsSolid(p.getHitBox().x + p.getHitBox().width/2, p.getHitBox().y + p.getHitBox().height/2, lvlData);
-    }
-
-    public static boolean CanMoveHere(float x, float y, float width, float height, int[][] lvlData){
-        if(!IsSolid(x,y,lvlData))
-            if(!IsSolid(x+width,y+height, lvlData))
-                if(!IsSolid(x+width,y,lvlData))
-                    return !IsSolid(x, y + height, lvlData);
-        return false;
     }
 
     public static boolean IsSolid(float x, float y, int[][] lvlData){

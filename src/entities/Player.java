@@ -16,7 +16,6 @@ import static utils.Constants.PlayerConstants.*;
 import static utils.HelpMethods.*;
 
 public class Player extends Entity{
-
     //region Variable
     private BufferedImage[][] animations;
     private int aniTick, aniIndex;
@@ -30,8 +29,6 @@ public class Player extends Entity{
     private boolean left, up, right, down, jump;
     private final float playerSpeed = Game.SCALE;
     private int[][] lvlData;
-//    private float xDrawOffset = 21 * Game.SCALE;
-//    private float yDrawOffset = 4 * Game.SCALE;
 
     private final PlayerCharacter playerCharacter;
     private final Playing playing;
@@ -68,7 +65,6 @@ public class Player extends Entity{
 
     //region Attack Variables
     private ArrayList<BaseAttack> attacks;
-    private BaseAttack currentAttack;
     //endregion
 
     //Attack Hitbox
@@ -83,53 +79,30 @@ public class Player extends Entity{
     private boolean dashUsedCheck = false;
     private int dashTick;
 
-
-
-
     public Player(PlayerCharacter playerCharacter, Playing playing) {
-        super(0, 0, (int)(playerCharacter.spriteWIDTH * Game.SCALE), (int)(playerCharacter.spriteHEIGHT * Game.SCALE) );
+        super(0, 50, (int)(playerCharacter.spriteWIDTH * Game.SCALE), (int)(playerCharacter.spriteHEIGHT * Game.SCALE) );
         this.playerCharacter = playerCharacter;
         this.playing = playing;
         loadAnimations();
 
         //attack initialization
         attacks = new ArrayList<>();
-//        attacks.add(new BasicAttack());
-//        attacks.add(new PowerAttack());
-
+        for(AttackData data : playerCharacter.attackData){
+            switch(data.type){
+                case BASIC -> attacks.add(new BasicAttack(data));
+                case POWER -> attacks.add(new PowerAttack(data));
+            }
+        }
         //Zamjeni status bar image
         statusBarImg = LoadSave.GetSpriteAtlas(LoadSave.STATUS_BAR);
-        initHitBox((int)playerCharacter.hitbox.width,(int)playerCharacter.hitbox.height);
+        initHitBox(playerCharacter.hitbox);
         initAttackBox();
     }
 
-    public void setSpawn(Point spawn){
-        this.x = spawn.x;
-        this.y = spawn.y;
-        hitBox.x = x;
-        hitBox.y = y;
-    }
 
-    private void initAttackBox() {
-        attackBox = new Rectangle2D.Float(x,y,(int)(20 * Game.SCALE), (int)(20 * Game.SCALE));
-    }
-
-    private void checkTrapCollision() {
-        playing.checkTrapCollision(this);
-    }
-
-    private void checkAttack() {
-        if(attackChecked || aniIndex != 1){
-            return;
-        }
-        attackChecked = true;
-        playing.checkEnemyHit(attackBox);
-        playing.checkObjectHit(attackBox);
-    }
 
     //region Updates
     public void update() {
-        updateHealthBar();
 
         if(knockedOut){
             playing.setGameOver(true);
@@ -149,14 +122,12 @@ public class Player extends Entity{
                 }
             }
         }
-
         if(attacking){
             checkAttack();
         }
 
         updateAnimationTick();
         setAnimation();
-
     }
 
     private void updateAttackBox() {
@@ -167,7 +138,6 @@ public class Player extends Entity{
         }
         attackBox.y = hitBox.y + (10 * Game.SCALE);
     }
-
     private void updateHealthBar() {
         healthWidth = (int)((currentHealth / (float) maxHealth) * healthBarWidth);
     }
@@ -320,8 +290,29 @@ public class Player extends Entity{
         //g.dispose();
     }
 
-    public void changeHealth(int value) {
+    public void setSpawn(Point spawn){
+        this.x = spawn.x;
+        this.y = spawn.y;
+        hitBox.x = x;
+        hitBox.y = y;
+    }
 
+    private void initAttackBox() {
+        attackBox = new Rectangle2D.Float(x,y,(int)(20 * Game.SCALE), (int)(20 * Game.SCALE));
+    }
+
+    private void checkTrapCollision() {playing.checkTrapCollision(this);}
+
+    private void checkAttack() {
+        if(attackChecked || aniIndex != 1){
+            return;
+        }
+        attackChecked = true;
+        playing.checkEnemyHit(attackBox);
+        playing.checkObjectHit(attackBox);
+    }
+
+    public void changeHealth(int value) {
         //region Standard Health
         currentHealth += value;
 
@@ -345,7 +336,6 @@ public class Player extends Entity{
     }
 
     private void setAnimation() {
-
         int startAni = playerAction;
 
         if(moving)
@@ -370,13 +360,11 @@ public class Player extends Entity{
         }
 
         if(attacking){
-            /*TODO:kasnije implementiraj switch case za combo attack: ATTACK_1 -> ATTACK_2 itd.
-            modificiraj za ostale vrste napada (AirDown, AirUp itd.)
-            switch (playerAction){
-             case:ATTACK_1: playerAction = ATTACK_2;
-             case:ATTACK_2: playerAction = ATTACK_3;
-             case IDLE, RUNNING, FALLING: playerAction = ATTACK_1;
-             }*/
+//            switch (playerAction){
+//             case:ATTACK_1: playerAction = ATTACK_2;
+//             case:ATTACK_2: playerAction = ATTACK_3;
+//             case IDLE, RUNNING, FALLING: playerAction = ATTACK_1;
+//             }
             playerAction=ATTACK_1;
             //Prvi put se ulazi u animaciju, prije nije napadao -> "Brža" animacija
             if(startAni != ATTACK_1){
@@ -418,16 +406,13 @@ public class Player extends Entity{
     }
 
     private void loadAnimations() {
-
         BufferedImage img = LoadSave.GetSpriteAtlas(playerCharacter.playerAtlas);
-        //9 mogućih animacija, najviše stanja u jednoj animaciji je 6
         animations = new BufferedImage[playerCharacter.rowPA][playerCharacter.colPA];
         for(int i = 0; i < animations.length; i++)
             for(int j = 0; j < animations[i].length;j++ ){
-                animations[i][j] = img.getSubimage(j*playerCharacter.spriteWIDTH, i*playerCharacter.spriteHEIGHT, playerCharacter.spriteWIDTH, playerCharacter.spriteHEIGHT);
+                animations[i][j] = img.getSubimage(j*playerCharacter.spriteWIDTH, i*playerCharacter.spriteHEIGHT,
+                        playerCharacter.spriteWIDTH, playerCharacter.spriteHEIGHT);
             }
-
-
     }
 
     public void loadLvlData(int[][] lvlData){
@@ -438,15 +423,9 @@ public class Player extends Entity{
 
     public void setHealth(int health){this.healthPercent = health;}
     public boolean isAttacking() {return attacking;}
-    public void setAttacking(boolean attacking){
-        this.attacking=attacking;
-    }
-    public void setPlayerAction(int playerAction){
-        this.playerAction = playerAction;
-    }
-    public void setDashActiveCheck(boolean dashActiveCheck){
-        this.dashActiveCheck = dashActiveCheck;
-    }
+    public void setAttacking(boolean attacking){this.attacking=attacking;}
+    public void setPlayerAction(int playerAction){this.playerAction = playerAction;}
+    public void setDashActiveCheck(boolean dashActiveCheck){this.dashActiveCheck = dashActiveCheck;}
     public Boolean getInvincibility() {return invincibility;}
     public void setInvincibility(Boolean invincibility) {this.invincibility = invincibility;}
 
@@ -492,15 +471,9 @@ public class Player extends Entity{
             lastMouseEvent = e;
         }
 
-    public boolean getProjectileAttack() {
-        return projectileAttack;
-    }
-    public void setProjectileAttack(boolean projectileAttack) {
-        this.projectileAttack = projectileAttack;
-    }
-    public int getFlipW() {
-        return flipW;
-    }
+    public boolean getProjectileAttack() {return projectileAttack;}
+    public void setProjectileAttack(boolean projectileAttack) {this.projectileAttack = projectileAttack;}
+    public int getFlipW() {return flipW;}
     public MouseEvent getLastMouseEvent() {return lastMouseEvent;}
     public Playing getPlaying() {return playing;}
     public int getHealth() {return healthPercent;}

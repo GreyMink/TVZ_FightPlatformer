@@ -1,19 +1,12 @@
 package utils;
 
-import entities.Crabby;
-import main.Game;
-
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-
-import static utils.Constants.EnemyConstants.CRABBY;
 
 public class LoadSave {
 
@@ -21,6 +14,12 @@ public class LoadSave {
     public static final String PIRATE_SELECT = "characters/pirate_select_img.png";
     public static final String PLAYER_SOLDIER = "characters/player_soldier.png";
     public static final String SOLDIER_SELECT = "characters/soldier_select_img.png";
+    public static final String PLAYER_KNIGHT = "characters/player_knight.png";
+    public static final String KNIGHT_SELECT = "characters/knight_select.png";
+    public static final String PLAYER_WEREWOLF = "characters/player_werewolf.png";
+    public static final String WEREWOLF_SELECT = "characters/werewolf_select.png";
+    public static final String PLAYER_SATYR = "characters/player_satyr.png";
+    public static final String SATYR_SELECT = "characters/satyr_select.png";
 
     public static final String COMPLETED_IMG = "completed_sprite.png";
     public static final String LEVEL_ATLAS = "outside_sprites.png";
@@ -32,7 +31,6 @@ public class LoadSave {
     public static final String SOUND_BUTTONS = "sound_button.png";
     public static final String URM_BUTTONS = "urm_buttons.png";
     public static final String VOLUME_BUTTONS = "volume_buttons.png";
-    public static final String CRABBY_SPRITE = "crabby_sprite.png";
     public static final String STATUS_BAR = "health_power_bar.png";
     public static final String MATCH_END_IMG = "completed_sprite.png";
     public static final String OPTIONS_MENU = "options_background.png";
@@ -62,21 +60,6 @@ public class LoadSave {
             }
         }
         return img;
-    }
-    public static ArrayList<Crabby> GetCrabs(){
-        BufferedImage img = GetSpriteAtlas(LoadSave.LEVEL_ONE_ATLAS);
-        ArrayList<Crabby> list = new ArrayList<>();
-
-        for (int j = 0; j < img.getHeight();j++){
-            for (int i = 0; i < img.getWidth();i++){
-                Color color = new Color(img.getRGB(i,j));
-                int value = color.getGreen();
-                if(value == CRABBY){
-                    list.add(new Crabby(i * Game.TILES_SIZE, j * Game.TILES_SIZE));
-                }
-            }
-        }
-        return list;
     }
     public static BufferedImage[] getAllStages(){
         URL url = LoadSave.class.getResource("/stages");
