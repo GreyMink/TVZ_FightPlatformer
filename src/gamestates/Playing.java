@@ -18,6 +18,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class Playing extends State implements StateMethods {
+    private int localPlayerIndex = 0;
+    private ArrayList<Player> players = new ArrayList<Player>();
     private Player hostPlayer;
 
     //region States
@@ -285,6 +287,8 @@ public class Playing extends State implements StateMethods {
 
     //region Getters, Setters, Extensions
     public Player getHostPlayer(){return hostPlayer;}
+    public Player getLocalPlayer(){return players.get(localPlayerIndex);}
+    public Player getRemotePlayer(int index){return players.get(index);}
     public LevelManager getLevelManager(){return levelManager;}
     public ObjectManager getObjectManager(){return objectManager;}
 

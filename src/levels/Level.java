@@ -1,5 +1,6 @@
 package levels;
 
+import entities.Player;
 import main.Game;
 import objects.GameContainer;
 import objects.Spike;
@@ -19,6 +20,7 @@ public class Level {
     private ArrayList<GameContainer> containers;
     private ArrayList<Spike> spikes;
 
+    private ArrayList<Point> spawnPoints;
     private Point playerSpawn;
     private Point remotePlayerSpawn;
 
@@ -46,7 +48,7 @@ public class Level {
 
                 loadLevelData(red, x, y);
                 loadEntities(green, x, y);
-                loadEntities(blue, x, y);
+//                loadObjects(blue, x, y);
             }
         }
 
@@ -58,26 +60,35 @@ public class Level {
             lvlData[y][x] = redValue;
     }
     private void loadEntities(int greenValue, int x, int y) {
-        //switch for multiple entities
-        //        switch(greenValue){
-//            case 100 -> playerSpawn = new Point(x * Game.TILES_SIZE, y * Game.TILES_SIZE);
-//        }
-
+//        if(greenValue == 100)
+//            spawnPoints.add(new Point(x * Game.TILES_SIZE, y * Game.TILES_SIZE));
         if(greenValue == 100)
-            playerSpawn = new Point(x * Game.TILES_SIZE, y * Game.TILES_SIZE);
+            playerSpawn = new Point(x * Game.TILES_SIZE, y *  Game.TILES_SIZE);
         if(greenValue == 101)
-            remotePlayerSpawn = new Point(x * Game.TILES_SIZE, y * Game.TILES_SIZE);
+            remotePlayerSpawn = new Point(x * Game.TILES_SIZE, y *  Game.TILES_SIZE);
     }
     private void loadObjects(int blueValue, int x, int y) {
         switch(blueValue){
             case BOX, BARREL -> containers.add(new GameContainer(x * Game.TILES_SIZE, y * Game.TILES_SIZE, blueValue));
             case SPIKE -> spikes.add(new Spike(x * Game.TILES_SIZE, y * Game.TILES_SIZE, blueValue));
+            default -> throw new IllegalStateException("Unexpected value: " + blueValue);
         }
     }
 
-
-
     //Create
+    public void createSpawnPoints(BufferedImage img){
+        spawnPoints = new ArrayList<>();
+            for(int i = 0; i < img.getHeight(); i++){
+                for(int j = 0; j < img.getWidth(); j++) {
+                    Color color = new Color(img.getRGB(j, i));
+                    int value = color.getGreen();
+                    if (value == 100) {
+                        spawnPoints.add(new Point(j * Game.TILES_SIZE, i * Game.TILES_SIZE));
+                    }
+                }
+            }
+        }
+
     public void calcPlayerSpawn(){playerSpawn = GetPlayerSpawn(img);}
     public void calcRemotePlayerSpawn(){remotePlayerSpawn = GetRemotePlayerSpawn(img);}
     private void createStageData() {lvlData = GetLevelData(img);}

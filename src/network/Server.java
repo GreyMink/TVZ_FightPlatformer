@@ -89,13 +89,13 @@ public class Server {
                         switch (type) {
                             case TYPE_INPUT -> {
                                 long seq = dis.readLong();
+                                int playerIndex = dis.readInt();
                                 int mask = dis.readInt();
                                 applyClientInput(mask);
                             }
                             case TYPE_CHAR_SELECT -> {
                                 int playerIndex = dis.readInt();
                                 int charIndex = dis.readInt();
-//                                System.out.println("Client send char data: "+ playerIndex + " " + charIndex);
                                 game.getPlaying().setRemotePlayerCharacter(game.getLobby().getPlayerCharacterList().get(charIndex));
                                 broadcastCharacterSelection(1, charIndex);
                             }

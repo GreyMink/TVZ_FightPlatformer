@@ -71,6 +71,7 @@ public class Client {
                     switch (type) {
                         case TYPE_INPUT -> {
                             long seq = dis.readLong();
+                            int playerIndex = dis.readInt();
                             int mask = dis.readInt();
                             // parse optional floats if you used them
                             // Apply client input to remote player (player index 1)
