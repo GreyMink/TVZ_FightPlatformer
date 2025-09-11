@@ -29,7 +29,7 @@ public enum PlayerCharacter {
             SOLDIER_SELECT,
             new AttackData[]{
                     new AttackData("Soldier Stab", AttackType.BASIC, 5, 2, 4, 10, 12, new Rectangle2D.Float(0,0,10,10),  3, 0),
-                    new AttackData("Soldier Power Shot",AttackType.POWER, 14, 7, 20, 10, 30, new Rectangle2D.Float(0,0,10,10),  10, 0)
+                    new AttackData("Soldier Power Shot",AttackType.PROJECTILE, 10, 7, 20, 10, 30, new Rectangle2D.Float(0,0,10,10),  10, 0)
             }),
     KNIGHT(4,7,2,1,5,2,6,
             0,1,2,3,4,6,7,

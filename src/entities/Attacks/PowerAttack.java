@@ -2,13 +2,11 @@ package entities.Attacks;
 
 import entities.Player;
 
-import java.awt.geom.Rectangle2D;
-
 public class PowerAttack extends BaseAttack{
     private AttackData attackData;
 
     public PowerAttack(AttackData attackData) {
-        super(attackData.name, attackData.damage, attackData.knockback, attackData.startupFrames, attackData.activeFrames, attackData.recoveryFrames, attackData.hitbox);
+        super(attackData.name, attackData.damage, attackData.knockbackPower, attackData.startupFrames, attackData.activeFrames, attackData.recoveryFrames, attackData.hitbox);
         this.attackData = attackData;
     }
 

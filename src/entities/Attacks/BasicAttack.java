@@ -2,13 +2,11 @@ package entities.Attacks;
 
 import entities.Player;
 
-import java.awt.geom.Rectangle2D;
-
 public class BasicAttack extends BaseAttack{
     private AttackData attackData;
 
     public BasicAttack(AttackData attackData){
-        super(attackData.name, attackData.damage, attackData.knockback, attackData.startupFrames,
+        super(attackData.name, attackData.damage, attackData.knockbackPower, attackData.startupFrames,
                 attackData.activeFrames, attackData.recoveryFrames, attackData.hitbox);
         this.attackData=attackData;
     }
@@ -20,7 +18,7 @@ public class BasicAttack extends BaseAttack{
         hitbox.y = player.getHitBox().y;
         active = true;
 
-        // In a game loop you’d manage startup/active/recovery frame counters here
+        // Ovdje kontroliraj  startup/active/recovery frame counter u gameloop
         player.getPlaying().checkEnemyHit(hitbox);
     }
 }

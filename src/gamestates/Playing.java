@@ -39,6 +39,8 @@ public class Playing extends State implements StateMethods {
 
     //region Network variables
     private Player remotePlayer;// player 2 - kontrole preko network poruka
+    private int hostNumber;
+    private int remoteNumber;
     private volatile int latestRemoteInputMask = 0; // set by Server thread
 
         //info - network package - player pos
@@ -83,6 +85,8 @@ public class Playing extends State implements StateMethods {
         remotePlayer.render(g);
         objectManager.draw(g);
 
+        drawStatusBars(g);
+
         if(paused){
             pauseOverlay.draw(g);
         }else if(gameOver){
@@ -91,12 +95,22 @@ public class Playing extends State implements StateMethods {
             matchFinishedOverlay.draw(g);
         }
     }
+
     private void initClasses() {
         levelManager = new LevelManager(game);
         objectManager = new ObjectManager(this);
         pauseOverlay = new PauseOverlay(this);
         gameOverOverlay = new GameOverOverlay(this);
         matchFinishedOverlay = new MatchFinishedOverlay(this);
+    }
+
+    public void resetAll(){
+        gameOver = false;
+        paused = false;
+        matchEnd = false;
+        hostPlayer.resetAll();
+        remotePlayer.resetAll();
+        objectManager.resetAllObjects();
     }
     public void loadNextStage(){
         levelManager.loadNextStage();
@@ -109,14 +123,7 @@ public class Playing extends State implements StateMethods {
 
     private void loadStageObjects() {objectManager.loadObjects(levelManager.getCurrentStage());}
 
-    public void resetAll(){
-        gameOver = false;
-        paused = false;
-        matchEnd = false;
-        hostPlayer.resetAll();
-        remotePlayer.resetAll();
-        objectManager.resetAllObjects();
-    }
+
 
     public void checkEnemyHit(Rectangle2D.Float attackBox){/*enemyManager.checkEnemyHit(attackBox);*/}
 
@@ -171,6 +178,68 @@ public class Playing extends State implements StateMethods {
     }
     //endregion
 
+    //region StatusBar
+
+
+    private void drawStatusBars(Graphics g) {
+        g.setFont(g.getFont().deriveFont(Font.BOLD, 24f));
+        g.setColor(Color.RED);
+
+        if(hostPlayer != null) {
+            drawPlayerHUD(g, hostPlayer, hostNumber, hostNumber == 1 ? 20 : Game.GAME_WIDTH - 300, 40);
+        }
+        if(remotePlayer != null) {
+            drawPlayerHUD(g, remotePlayer, remoteNumber, remoteNumber == 2 ? Game.GAME_WIDTH - 300 : 20, 40);
+        }
+    }
+
+    private void drawPlayerHUD(Graphics g, Player player, int playerNumber, int x, int y) {
+        int damage = player.getHealthPercent();
+        int lives = player.getLives();
+
+        int hudWidth = 300;
+        int hudHeight = 60;
+
+        g.setColor(new Color(0,0,0,150));
+        g.fillRoundRect(x, y, hudWidth, hudHeight, 15, 15);
+
+        //Širina raste sa štetom
+        int barMaxWidth = 200;
+        int barWidth = Math.min(barMaxWidth, damage * 2); // 0-200px za 0-100%
+        int barHeight = 15;
+
+        //Boja se mijenja iz zelene u crvenu promjenom štete
+        float t = Math.min(1f, damage / 150f);
+        Color barColor = new Color(
+                (int)(255 * t),
+                (int)(255 * (1 - t)),
+                0);
+        g.setColor(barColor);
+        g.fillRect(x + 15, y + 30, barWidth, barHeight);
+
+        //Obrub
+        g.setColor(Color.WHITE);
+        g.drawRect(x + 15, y + 30, barMaxWidth, barHeight);
+
+        //Tekst
+        g.setColor(Color.WHITE);
+        g.drawString("P" + playerNumber + ": " + damage + "%", x + 15, y + 25);
+
+        //prikaz života 
+        g.setColor(Color.PINK);
+        int heartX = x + hudWidth - 80;
+        int heartY = y + 15;
+        for(int i=0;i<lives;i++){
+            drawHeart(g, heartX + i*20, heartY, 12);
+        }
+    }
+
+    private void drawHeart(Graphics g, int x, int y, int size){
+        int[] xs = {x, x+size/2, x+size, x+size/2};
+        int[] ys = {y, y-size/2, y, y+size/2};
+        g.fillPolygon(xs, ys, 4);
+    }
+    //endregion
 
     //region Inputs
     @Override
@@ -311,18 +380,14 @@ public class Playing extends State implements StateMethods {
     }
 
     public void setGameOver(boolean gameOver){this.gameOver = gameOver;}
-    public void setMatchEnd(boolean matchEnd){
-        this.matchEnd = matchEnd;
-    }
-    public void checkObjectHit(Rectangle2D.Float attackBox) {
-        objectManager.checkObjectHit(attackBox);
-    }
+    public void setRemoteNumber(int remoteNumber) {this.remoteNumber = remoteNumber;}
+    public void setHostNumber(int hostNumber) {this.hostNumber = hostNumber;}
+    public void setMatchEnd(boolean matchEnd){this.matchEnd = matchEnd;}
+    public void checkObjectHit(Rectangle2D.Float attackBox) {objectManager.checkObjectHit(attackBox);}
     public void checkTrapCollision(Player player) {objectManager.checkTrapCollision(player);}
 //    public void WindowFocusLost(){
 //        player.resetDirBooleans();
 //    }
-    public void unpauseGame(){
-        paused = false;
-    }
+    public void unpauseGame(){paused = false;}
     //endregion
 }

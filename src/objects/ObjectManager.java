@@ -120,7 +120,7 @@ public class ObjectManager {
     public void checkTrapCollision(Player player){
         for(Spike s : spikes){
             if(s.getHitBox().intersects(player.getHitBox()) && !player.getInvincibility()){
-                player.changeHealth(-10);
+                player.addDamage(10);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

@@ -42,26 +42,16 @@ public class Player extends Entity{
     private boolean inAir = false;
     //endregion
 
-    //region Health Bar
-    private final BufferedImage statusBarImg;
-    //max lives in match
+    //region Health
+    private final int maxLives = 3;
     private final int lives = 3;
     private int healthPercent = 0;
-
-    private final int statusBarWidth = (int)(192 * Game.SCALE);
-    private final int statusBarHeight = (int)(58 * Game.SCALE);
-    private final int statusBarX = (int)(10 * Game.SCALE);
-    private final int statusBarY = (int)(10 * Game.SCALE);
-
-    private int healthBarWidth = (int)(150 * Game.SCALE);
-    private int healthBarHeight = (int)(4 * Game.SCALE);
-    private int healthBarXStart = (int)(34 * Game.SCALE);
-    private int healthBarYStart = (int)(14 * Game.SCALE);
-
-    private int maxHealth = 100;
-    private int currentHealth = maxHealth;
-    private int healthWidth = healthBarWidth;
     //endregion
+
+    //Damage + knockback
+    private float knockbackVelX = 0;
+    private float knockbackVelY = 0;
+    private int knockbackFrames = 0;
 
     //region Attack Variables
     private ArrayList<BaseAttack> attacks;
@@ -93,8 +83,6 @@ public class Player extends Entity{
                 case POWER -> attacks.add(new PowerAttack(data));
             }
         }
-        //Zamjeni status bar image
-        statusBarImg = LoadSave.GetSpriteAtlas(LoadSave.STATUS_BAR);
         initHitBox(playerCharacter.hitbox);
         initAttackBox();
     }
@@ -138,9 +126,6 @@ public class Player extends Entity{
         }
         attackBox.y = hitBox.y + (10 * Game.SCALE);
     }
-    private void updateHealthBar() {
-        healthWidth = (int)((currentHealth / (float) maxHealth) * healthBarWidth);
-    }
     private void updateAnimationTick() {
         aniTick++;
         if(aniTick >= aniSpeed){
@@ -156,6 +141,22 @@ public class Player extends Entity{
 
     private void updatePosition() {
         moving=false;
+
+        if (knockbackFrames > 0) {
+            // hitbox se krece sa knockback
+            hitBox.x += knockbackVelX;
+            hitBox.y += knockbackVelY;
+
+            // uspori knockback za 10%
+            knockbackVelX *= 0.9f;
+            knockbackVelY *= 0.9f;
+
+            knockbackFrames--;
+
+            // preskače normalne kontrole dok se prima šteta + malo knockbackFrames
+            return;
+        }
+
         if(jump)
             jump();
 
@@ -261,33 +262,17 @@ public class Player extends Entity{
             }
         }
     }
-
     //endregion
 
     public void render(Graphics g){
         g.drawImage(animations[playerAction][aniIndex], (int)(hitBox.x - playerCharacter.xDrawOffset + flipX), (int)(hitBox.y - playerCharacter.yDrawOffset), width * flipW, height, null);
         drawHitbox(g);
         drawAttackBox(g);
-        drawUI(g);
     }
 
     private void drawAttackBox(Graphics g) {
         g.setColor(Color.RED);
         g.drawRect((int)attackBox.x,(int)attackBox.y,(int)attackBox.width,(int)attackBox.height);
-    }
-
-    private void drawUI(Graphics g) {
-        g.drawRect(statusBarX,statusBarY,statusBarWidth/2,statusBarHeight/2);
-
-        //Proxy
-        //g.drawImage(statusBarImg,statusBarX,statusBarY,statusBarWidth,statusBarHeight,null);
-        //g.setColor(Color.RED);
-        //g.fillRect(healthBarXStart + statusBarX, healthBarYStart + statusBarY, healthWidth, healthBarHeight);
-
-        //Fonts
-        g.setFont(g.getFont().deriveFont(30f));
-        g.drawString(healthPercent + "%",statusBarX + statusBarWidth/4,statusBarY + statusBarHeight/4);
-        //g.dispose();
     }
 
     public void setSpawn(Point spawn){
@@ -312,28 +297,35 @@ public class Player extends Entity{
         playing.checkObjectHit(attackBox);
     }
 
-    public void changeHealth(int value) {
-        //region Standard Health
-        currentHealth += value;
-
-        if(currentHealth <= 0){
-            currentHealth = 0;
-            //gameOver();
-        }else if (currentHealth >= maxHealth){
-            currentHealth = maxHealth;
-        }
-        //endregion
-
-        healthPercent -= value;
+    public void addDamage(int value) {
+        healthPercent += value;
         if(healthPercent >= 200){
             healthPercent = 200;
         }
-
     }
 
-    public void knockBack(int damage){
+    public void knockBack(float attackDirX, float attackDirY, float attackPower){
+        // attackDirX/Y: unit direction vector ( 1,0 za desno)
+        // attackPower: umnozak snagom napada
 
+        float damage = getHealthPercent();
+
+        // osnovni knockback
+        //BASE_KNOCKBACK;     // minimum pixels per frame
+        //KNOCKBACK_SCALING;           // knockback per % damage
+
+        float knockback = (BASE_KNOCKBACK + damage * KNOCKBACK_SCALING) * attackPower;
+
+        // apply to velocity
+        knockbackVelX = attackDirX * knockback;
+        knockbackVelY = attackDirY * knockback;
+
+        knockbackFrames = 20; // trajanje knockbacka (frames)
+        inAir = true;         // player je u zraku
     }
+
+    public void resetDamage(){healthPercent = 0;}
+
 
     private void setAnimation() {
         int startAni = playerAction;
@@ -390,7 +382,6 @@ public class Player extends Entity{
         jump = false;
         knockedOut = false;
         playerAction = IDLE;
-        currentHealth = maxHealth;
         healthPercent = 0;
         hitBox.x = x;
         hitBox.y = y;
@@ -421,6 +412,12 @@ public class Player extends Entity{
             inAir = true;
     }
 
+    public void powerAttack(MouseEvent e) {
+        projectileAttack = true;
+        lastMouseEvent = e;
+    }
+
+
     public void setHealth(int health){this.healthPercent = health;}
     public boolean isAttacking() {return attacking;}
     public void setAttacking(boolean attacking){this.attacking=attacking;}
@@ -443,7 +440,6 @@ public class Player extends Entity{
         inAir = true;
         airSpeed = jumpSpeed;
     }
-
     public void dashMove(){
         if(dashActiveCheck){
             return;
@@ -466,18 +462,14 @@ public class Player extends Entity{
     public void setJump(boolean jump) {this.jump = jump;}
     //endregion
 
-    public void powerAttack(MouseEvent e) {
-            projectileAttack = true;
-            lastMouseEvent = e;
-        }
 
+    public int getHealthPercent() {return healthPercent;}
+    public int getLives() {return lives;}
     public boolean getProjectileAttack() {return projectileAttack;}
     public void setProjectileAttack(boolean projectileAttack) {this.projectileAttack = projectileAttack;}
     public int getFlipW() {return flipW;}
     public MouseEvent getLastMouseEvent() {return lastMouseEvent;}
     public Playing getPlaying() {return playing;}
-    public int getHealth() {return healthPercent;}
-    public int getLives() {return lives;}
     public void setFlipW(int flipW) {this.flipW = flipW;}
     //region Network
     // Called by Server.applyClientInput() to set remote input safely

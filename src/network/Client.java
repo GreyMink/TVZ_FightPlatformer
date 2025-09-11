@@ -27,6 +27,9 @@ public class Client {
     public Client(Game game) {
         this.game = game;
         this.playing = game.getPlaying();
+
+        game.getPlaying().setHostNumber(2);
+        game.getPlaying().setRemoteNumber(1);
     }
 
     // Otkrivanje servera UDP protokolom
@@ -71,7 +74,7 @@ public class Client {
                     switch (type) {
                         case TYPE_INPUT -> {
                             long seq = dis.readLong();
-                            int playerIndex = dis.readInt();
+//                            int playerIndex = dis.readInt();
                             int mask = dis.readInt();
                             // parse optional floats if you used them
                             // Apply client input to remote player (player index 1)

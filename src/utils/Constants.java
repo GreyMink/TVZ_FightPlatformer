@@ -66,6 +66,10 @@ public class Constants {
         public static final int DEAD = 6;
         public static final int DASH = 7;
 
+        //Knockback
+        public static final float BASE_KNOCKBACK = 3.0f;
+        public static final float KNOCKBACK_SCALING = 0.1f;
+
     }
 
     public static class UI{

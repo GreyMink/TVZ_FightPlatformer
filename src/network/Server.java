@@ -34,6 +34,9 @@ public class Server {
         this.game = game;
         this.tcpPort = tcpPort;
         this.playing = game.getPlaying();
+
+        game.getPlaying().setHostNumber(1);
+        game.getPlaying().setRemoteNumber(2);
     }
 
     public void start() throws IOException {
@@ -89,7 +92,7 @@ public class Server {
                         switch (type) {
                             case TYPE_INPUT -> {
                                 long seq = dis.readLong();
-                                int playerIndex = dis.readInt();
+//                                int playerIndex = dis.readInt();
                                 int mask = dis.readInt();
                                 applyClientInput(mask);
                             }
@@ -156,12 +159,12 @@ public class Server {
         float p0y = playing.getHostPlayer().getY();
 //        float p0vx = playing.getPlayer().getVx();
 //        float p0vy = playing.getPlayer().getVy();
-        float p0health = playing.getHostPlayer().getHealth();
+//        float p0health = playing.getHostPlayer().getHealth();
         dos.writeFloat(p0x);
         dos.writeFloat(p0y);
         //dos.writeFloat(p0vx);
         //dos.writeFloat(p0vy);
-        dos.writeFloat(p0health);
+//        dos.writeFloat(p0health);
 
         // remote (player 1) - you will need a second player reference
         // (if you store remote player in playing.getRemotePlayer())
@@ -170,7 +173,7 @@ public class Server {
             dos.writeFloat(playing.getRemotePlayer().getY());
             //dos.writeFloat(playing.getRemotePlayer().getVx());
             //dos.writeFloat(playing.getRemotePlayer().getVy());
-            dos.writeFloat(playing.getRemotePlayer().getHealth());
+//            dos.writeFloat(playing.getRemotePlayer().getHealth());
         } else {
             // send placeholders
             dos.writeFloat(0);

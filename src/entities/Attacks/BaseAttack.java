@@ -8,7 +8,7 @@ import java.awt.geom.Rectangle2D;
 public abstract class BaseAttack {
     protected String name;
     protected int damage;
-    protected int knockback;
+    protected float knockbackPower;
     protected int startupFrames;
     protected int activeFrames;
     protected int recoveryFrames;
@@ -16,12 +16,12 @@ public abstract class BaseAttack {
 
     protected boolean active;
 
-    public BaseAttack(String name, int damage, int knockback,
+    public BaseAttack(String name, int damage, float knockbackPower,
                       int startup, int active, int recovery,
                       Rectangle2D.Float hitbox){
         this.name = name;
         this.damage = damage;
-        this.knockback = knockback;
+        this.knockbackPower = knockbackPower;
         this.startupFrames = startup;
         this.activeFrames = active;
         this.recoveryFrames = recovery;
@@ -42,8 +42,8 @@ public abstract class BaseAttack {
     public int getDamage() {
         return damage;
     }
-    public int getKnockback() {
-        return knockback;
+    public float getKnockbackPower() {
+        return knockbackPower;
     }
     public Rectangle2D.Float getHitbox() {
         return hitbox;
