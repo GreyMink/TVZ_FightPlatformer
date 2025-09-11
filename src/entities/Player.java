@@ -29,6 +29,7 @@ public class Player extends Entity{
     private boolean left, up, right, down, jump;
     private final float playerSpeed = Game.SCALE;
     private int[][] lvlData;
+    private Point spawnPoint;
 
     private final PlayerCharacter playerCharacter;
     private final Playing playing;
@@ -44,7 +45,7 @@ public class Player extends Entity{
 
     //region Health
     private final int maxLives = 3;
-    private final int lives = 3;
+    private int lives = maxLives;
     private int healthPercent = 0;
     //endregion
 
@@ -55,6 +56,7 @@ public class Player extends Entity{
 
     //region Attack Variables
     private ArrayList<BaseAttack> attacks;
+    private int attackIndex;
     //endregion
 
     //Attack Hitbox
@@ -78,11 +80,9 @@ public class Player extends Entity{
         //attack initialization
         attacks = new ArrayList<>();
         for(AttackData data : playerCharacter.attackData){
-            switch(data.type){
-                case BASIC -> attacks.add(new BasicAttack(data));
-                case POWER -> attacks.add(new PowerAttack(data));
-            }
+            attacks.add(AttackFactory.createAttack(data));
         }
+        System.out.println("attacks: " + attacks);
         initHitBox(playerCharacter.hitbox);
         initAttackBox();
     }
@@ -93,7 +93,7 @@ public class Player extends Entity{
     public void update() {
 
         if(knockedOut){
-            playing.setGameOver(true);
+            handleKnockout(spawnPoint);
             return;
         }
         updateAttackBox();
@@ -264,6 +264,7 @@ public class Player extends Entity{
     }
     //endregion
 
+
     public void render(Graphics g){
         g.drawImage(animations[playerAction][aniIndex], (int)(hitBox.x - playerCharacter.xDrawOffset + flipX), (int)(hitBox.y - playerCharacter.yDrawOffset), width * flipW, height, null);
         drawHitbox(g);
@@ -275,12 +276,6 @@ public class Player extends Entity{
         g.drawRect((int)attackBox.x,(int)attackBox.y,(int)attackBox.width,(int)attackBox.height);
     }
 
-    public void setSpawn(Point spawn){
-        this.x = spawn.x;
-        this.y = spawn.y;
-        hitBox.x = x;
-        hitBox.y = y;
-    }
 
     private void initAttackBox() {
         attackBox = new Rectangle2D.Float(x,y,(int)(20 * Game.SCALE), (int)(20 * Game.SCALE));
@@ -289,10 +284,20 @@ public class Player extends Entity{
     private void checkTrapCollision() {playing.checkTrapCollision(this);}
 
     private void checkAttack() {
-        if(attackChecked || aniIndex != 1){
-            return;
-        }
+        if(attackChecked || aniIndex != 1)return;
         attackChecked = true;
+
+        if(attacks.isEmpty())return;
+        BaseAttack current = attacks.get(attackIndex);
+        current.execute(this);
+
+        for(Player enemy : playing.getAllPlayers()){
+            if(enemy == this)continue;
+            if(current.getHitbox().intersects(enemy.getHitBox())){
+                current.applyHit(this,enemy);
+            }
+        }
+
         playing.checkEnemyHit(attackBox);
         playing.checkObjectHit(attackBox);
     }
@@ -326,6 +331,26 @@ public class Player extends Entity{
 
     public void resetDamage(){healthPercent = 0;}
 
+    public void handleKnockout(Point spawnPoint) {
+        loseLife();
+        if (lives > 0) {
+            // respawn
+            setSpawn(spawnPoint);
+            resetAll();        // resets velocity, damage %, states
+        } else {
+            // završava borba kada ostane bez života
+            playing.checkMatchEnd();
+        }
+    }
+
+    public void setSpawn(Point spawn){
+        this.x = spawn.x;
+        this.y = spawn.y;
+        this.hitBox.x = x;
+        this.hitBox.y = y;
+
+        this.spawnPoint = spawn;
+    }
 
     private void setAnimation() {
         int startAni = playerAction;
@@ -459,14 +484,17 @@ public class Player extends Entity{
     public void setUp(boolean up) {this.up = up;}
     public void setDown(boolean down) {this.down = down;}
     public void setRight(boolean right) {this.right = right;}
+    public void setAttackIndex(int index){this.aniIndex = index;}
     public void setJump(boolean jump) {this.jump = jump;}
     //endregion
 
-
-    public int getHealthPercent() {return healthPercent;}
     public int getLives() {return lives;}
+    public void loseLife() {lives--;}
+    public void resetLives() {lives = maxLives;}
+    public int getHealthPercent() {return healthPercent;}
     public boolean getProjectileAttack() {return projectileAttack;}
     public void setProjectileAttack(boolean projectileAttack) {this.projectileAttack = projectileAttack;}
+    public int getAttackIndex(){return attackIndex;}
     public int getFlipW() {return flipW;}
     public MouseEvent getLastMouseEvent() {return lastMouseEvent;}
     public Playing getPlaying() {return playing;}

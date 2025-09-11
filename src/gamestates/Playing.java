@@ -108,8 +108,14 @@ public class Playing extends State implements StateMethods {
         gameOver = false;
         paused = false;
         matchEnd = false;
-        hostPlayer.resetAll();
-        remotePlayer.resetAll();
+        if(hostPlayer != null){
+            hostPlayer.resetLives();
+            hostPlayer.resetAll();
+        }
+        if(remotePlayer != null){
+            remotePlayer.resetLives();
+            remotePlayer.resetAll();
+        }
         objectManager.resetAllObjects();
     }
     public void loadNextStage(){
@@ -122,8 +128,6 @@ public class Playing extends State implements StateMethods {
     }
 
     private void loadStageObjects() {objectManager.loadObjects(levelManager.getCurrentStage());}
-
-
 
     public void checkEnemyHit(Rectangle2D.Float attackBox){/*enemyManager.checkEnemyHit(attackBox);*/}
 
@@ -179,8 +183,6 @@ public class Playing extends State implements StateMethods {
     //endregion
 
     //region StatusBar
-
-
     private void drawStatusBars(Graphics g) {
         g.setFont(g.getFont().deriveFont(Font.BOLD, 24f));
         g.setColor(Color.RED);
@@ -241,13 +243,18 @@ public class Playing extends State implements StateMethods {
     }
     //endregion
 
+
+
     //region Inputs
     @Override
     public void mouseClicked(MouseEvent e) {
         if(!gameOver){
             if(e.getButton() == MouseEvent.BUTTON1){
+                hostPlayer.setAttackIndex(1);
                 hostPlayer.setAttacking(true);
+
             }else if(e.getButton() == MouseEvent.BUTTON3){
+                hostPlayer.setAttackIndex(2);
                 hostPlayer.powerAttack(e);
             }
         }
@@ -389,5 +396,25 @@ public class Playing extends State implements StateMethods {
 //        player.resetDirBooleans();
 //    }
     public void unpauseGame(){paused = false;}
+
+    public ArrayList<Player> getAllPlayers() {
+        ArrayList<Player> allPlayers = new ArrayList<>();
+        if(hostPlayer!=null){allPlayers.add(hostPlayer);}
+        if(remotePlayer!=null){allPlayers.add(remotePlayer);}
+        return allPlayers;
+    }
+
+    public void checkMatchEnd() {
+        //provjera života
+        int hostLives = hostPlayer.getLives();
+        int remoteLives = remotePlayer.getLives();
+
+        if (hostLives <= 0 || remoteLives <= 0) {
+            // show match overlay
+            matchEnd = true;         // triggers MatchFinishedOverlay
+            // optionally tell overlay who won:
+//            matchFinishedOverlay.setWinner(hostLives > 0 ? hostNumber : remoteNumber);
+        }
+    }
     //endregion
 }

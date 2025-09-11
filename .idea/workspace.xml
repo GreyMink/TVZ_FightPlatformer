@@ -4,47 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="11d916e2-e165-4d9c-bfad-abee3b5f7372" name="Changes" comment="čiščenje">
-      <change afterPath="$PROJECT_DIR$/src/entities/Attacks/ProjectileAttack.java" afterDir="false" />
+    <list default="true" id="11d916e2-e165-4d9c-bfad-abee3b5f7372" name="Changes" comment="pomaknuo StatusBar HUD iz player u Playing&#10;Dodao metode za knockback">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/AttackData.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/AttackData.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/AttackFactory$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/AttackFactory$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/AttackFactory.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/AttackFactory.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/AttackType.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/AttackType.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/BaseAttack.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/BaseAttack.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/BasicAttack.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/BasicAttack.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/PowerAttack.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Attacks/PowerAttack.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Enemy.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Enemy.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Player$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Player$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Player$1.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Player.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/Player.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/PlayerCharacter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/entities/PlayerCharacter.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/Playing.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/gamestates/Playing.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/network/Client$DiscoveredServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/network/Client$DiscoveredServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/network/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/network/Client.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/network/Server.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/network/Server.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/objects/ObjectManager$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/objects/ObjectManager$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/objects/ObjectManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/objects/ObjectManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$EnemyConstants.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$EnemyConstants.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$NetworkConstants.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$NetworkConstants.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$PlayerConstants.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$PlayerConstants.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$Buttons.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$Buttons.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$PauseButtons.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$PauseButtons.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$URMButtons.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$URMButtons.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$VolumeButtons.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI$VolumeButtons.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/TVZ_FightingGame/utils/Constants$UI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Attacks/AttackData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Attacks/AttackData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Attacks/AttackFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Attacks/AttackFactory.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Attacks/AttackType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Attacks/AttackType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/entities/Attacks/BaseAttack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Attacks/BaseAttack.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/entities/Attacks/BasicAttack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Attacks/BasicAttack.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/entities/Attacks/PowerAttack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Attacks/PowerAttack.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/Enemy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Enemy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/entities/Attacks/ProjectileAttack.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Attacks/ProjectileAttack.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/entities/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/Player.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/entities/PlayerCharacter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/entities/PlayerCharacter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/gamestates/Playing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/gamestates/Playing.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/network/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/network/Client.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/network/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/network/Server.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/objects/ObjectManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/objects/ObjectManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/Constants.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -177,7 +153,8 @@
       <workItem from="1757315342424" duration="33570000" />
       <workItem from="1757397985160" duration="12148000" />
       <workItem from="1757482943085" duration="32753000" />
-      <workItem from="1757557575653" duration="11917000" />
+      <workItem from="1757557575653" duration="19539000" />
+      <workItem from="1757578022113" duration="8434000" />
     </task>
     <task id="LOCAL−00001" summary="inicijalizacija">
       <option name="closed" value="true" />
@@ -256,7 +233,14 @@
       <option name="presentableId" value="LOCAL−00011" />
       <updated>1757558246308</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL−00012" summary="pomaknuo StatusBar HUD iz player u Playing&#10;Dodao metode za knockback">
+      <option name="closed" value="true" />
+      <created>1757569664125</created>
+      <option name="number" value="LOCAL−00012" />
+      <option name="presentableId" value="LOCAL−00012" />
+      <updated>1757569664125</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -284,20 +268,12 @@
     <MESSAGE value="uredivanje koda (odstranjivanje nepotrebnih razmaka, nekorištenih blokova)" />
     <MESSAGE value="dodavanje likova za igru" />
     <MESSAGE value="čiščenje" />
-    <option name="LAST_COMMIT_MESSAGE" value="čiščenje" />
+    <MESSAGE value="pomaknuo StatusBar HUD iz player u Playing&#10;Dodao metode za knockback" />
+    <option name="LAST_COMMIT_MESSAGE" value="pomaknuo StatusBar HUD iz player u Playing&#10;Dodao metode za knockback" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/levels/LevelManager.java</url>
-          <line>47</line>
-          <properties class="levels.LevelManager" method="buildAllStages">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>file://$PROJECT_DIR$/src/network/Server.java</url>
           <line>41</line>

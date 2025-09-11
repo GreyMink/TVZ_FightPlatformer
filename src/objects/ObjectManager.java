@@ -121,6 +121,7 @@ public class ObjectManager {
         for(Spike s : spikes){
             if(s.getHitBox().intersects(player.getHitBox()) && !player.getInvincibility()){
                 player.addDamage(10);
+                player.knockBack(s.getHitBox().x < player.getHitBox().x ? 1f : -1f, -1, 2);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
