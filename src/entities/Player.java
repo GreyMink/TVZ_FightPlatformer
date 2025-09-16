@@ -84,7 +84,6 @@ public class Player extends Entity{
         }
         System.out.println("attacks: " + attacks);
         initHitBox(playerCharacter.hitbox);
-        initAttackBox();
     }
 
 
@@ -96,7 +95,6 @@ public class Player extends Entity{
             handleKnockout(spawnPoint);
             return;
         }
-        updateAttackBox();
         updatePosition();
 
         if(moving){
@@ -118,14 +116,6 @@ public class Player extends Entity{
         setAnimation();
     }
 
-    private void updateAttackBox() {
-        if(right || dashActiveCheck && flipW == 1){
-            attackBox.x = hitBox.x + hitBox.width + (int)(10 * Game.SCALE);
-        }else if(left || dashActiveCheck && flipW == -1){
-            attackBox.x = hitBox.x - hitBox.width - (int)(10 * Game.SCALE);
-        }
-        attackBox.y = hitBox.y + (10 * Game.SCALE);
-    }
     private void updateAnimationTick() {
         aniTick++;
         if(aniTick >= aniSpeed){
@@ -144,8 +134,8 @@ public class Player extends Entity{
 
         if (knockbackFrames > 0) {
             // hitbox se krece sa knockback
-            hitBox.x += knockbackVelX;
-            hitBox.y += knockbackVelY;
+            updateXPos(knockbackVelX);
+            updateYPos(knockbackVelY);
 
             // uspori knockback za 10%
             knockbackVelX *= 0.9f;
@@ -268,21 +258,11 @@ public class Player extends Entity{
     public void render(Graphics g){
         g.drawImage(animations[playerAction][aniIndex], (int)(hitBox.x - playerCharacter.xDrawOffset + flipX), (int)(hitBox.y - playerCharacter.yDrawOffset), width * flipW, height, null);
         drawHitbox(g);
-        drawAttackBox(g);
-    }
-
-    private void drawAttackBox(Graphics g) {
-        g.setColor(Color.RED);
-        g.drawRect((int)attackBox.x,(int)attackBox.y,(int)attackBox.width,(int)attackBox.height);
-    }
-
-
-    private void initAttackBox() {
-        attackBox = new Rectangle2D.Float(x,y,(int)(20 * Game.SCALE), (int)(20 * Game.SCALE));
     }
 
     private void checkTrapCollision() {playing.checkTrapCollision(this);}
 
+    //region Attacks and damage
     private void checkAttack() {
         if(attackChecked || aniIndex != 1)return;
         attackChecked = true;
@@ -329,8 +309,6 @@ public class Player extends Entity{
         inAir = true;         // player je u zraku
     }
 
-    public void resetDamage(){healthPercent = 0;}
-
     public void handleKnockout(Point spawnPoint) {
         loseLife();
         if (lives > 0) {
@@ -342,6 +320,7 @@ public class Player extends Entity{
             playing.checkMatchEnd();
         }
     }
+    //endregion
 
     public void setSpawn(Point spawn){
         this.x = spawn.x;
@@ -488,6 +467,7 @@ public class Player extends Entity{
     public void setJump(boolean jump) {this.jump = jump;}
     //endregion
 
+    public boolean isInKnockback() {return knockbackFrames > 0;}
     public int getLives() {return lives;}
     public void loseLife() {lives--;}
     public void resetLives() {lives = maxLives;}
@@ -499,6 +479,8 @@ public class Player extends Entity{
     public MouseEvent getLastMouseEvent() {return lastMouseEvent;}
     public Playing getPlaying() {return playing;}
     public void setFlipW(int flipW) {this.flipW = flipW;}
+    public PlayerCharacter getPlayerCharacter() { return playerCharacter; }
+    public float getAirSpeed() {return airSpeed;}
     //region Network
     // Called by Server.applyClientInput() to set remote input safely
     public void setRemoteInputForOtherPlayer(boolean left, boolean right, boolean up, boolean down, boolean jump, boolean attack){

@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static utils.Constants.UI.Buttons.*;
+import static utils.LoadSave.LOBBY_INFO_BACKGROUND;
+
 public class Lobby extends State implements StateMethods {
 
     //region Varijable
@@ -36,8 +39,8 @@ public class Lobby extends State implements StateMethods {
 
     private static final int BUTTON_WIDTH = 120;
     private static final int BUTTON_HEIGHT = 80;
-    private static final int GAP = 20;
-    private static final int MAX_PER_ROW = 3;
+    private static final int GAP = 10;
+    private static final int MAX_PER_ROW = 2;
 
     //Lista gumbi za određivanje stage i charactera
     private ArrayList<SelectButton> stagesButtons = new ArrayList<>();
@@ -71,30 +74,26 @@ public class Lobby extends State implements StateMethods {
     @Override
     public void draw(Graphics g) {
         g.drawImage(backgroundImgBack, 0,0,Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
-        //g.drawImage(backgroundImg,menuX,menuY,menuWidth,menuHeight,null);
+        g.drawImage(backgroundImg,(5*Game.GAME_WIDTH) / 8 - 10,menuY - 30,menuWidth,menuHeight,null);
+        g.drawImage(backgroundImg,Game.GAME_WIDTH / 8 - 10 ,menuY - 30,menuWidth,menuHeight,null);
 
+        drawPlayerStatus(g);
         startMatchButton.draw(g);
         drawSelectionButtons(g);
     }
 
     private void loadBackground() {
-        //backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.MENU_BACKGROUND);
+        backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.LOBBY_BACKGROUND_STONE);
+        backgroundImgBack = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_STONE_HENGE);
 
-        backgroundImgBack = new BufferedImage(Game.GAME_WIDTH, Game.GAME_HEIGHT, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2d = (Graphics2D) backgroundImgBack.getGraphics();
-        g2d.setColor(Color.BLUE);
-        g2d.fillRect(0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
-        g2d.dispose();
-
-//        menuWidth = (int)(backgroundImg.getWidth() * Game.SCALE);
-//        menuHeight = (int)(backgroundImg.getHeight() * Game.SCALE);
-//        menuX = Game.GAME_WIDTH / 2 - menuWidth / 2;
-//        menuY = (int) (45 * Game.SCALE);
+        menuWidth = (int)(backgroundImg.getWidth() * Game.SCALE);
+        menuHeight = (int)(backgroundImg.getHeight() * Game.SCALE);
+        menuX = Game.GAME_WIDTH / 2 - menuWidth / 2;
+        menuY = (int) (70 * Game.SCALE);
     }
 
     private void loadButtons() {
-        startMatchButton = new MenuButton(Game.GAME_WIDTH / 2, (int) (340 * Game.SCALE), 0, Gamestate.PLAYING);
-
+        startMatchButton = new MenuButton(Game.GAME_WIDTH / 2, (int) (340 * Game.SCALE), 3, Gamestate.PLAYING);
         generateSelectionButtons();
     }
 
@@ -110,29 +109,45 @@ public class Lobby extends State implements StateMethods {
 
         for(int row = 0; row < stagesList.size(); ){
             int buttonsInRow = Math.min(MAX_PER_ROW, stagesList.size() - row);
-            int rowWidth = buttonsInRow * BUTTON_WIDTH + (buttonsInRow - 1) * GAP;
+            int totalGapWidth = (buttonsInRow - 1) * GAP;
+
+            int maxAllowedWidth = halfWidth - totalGapWidth;
+
+            int buttonWidth = B_STONE_SELECT_WIDTH;
+            if(buttonsInRow * B_STONE_SELECT_WIDTH > maxAllowedWidth){
+                buttonWidth = maxAllowedWidth / buttonsInRow;
+            }
+
+            int rowWidth = buttonsInRow * buttonWidth + totalGapWidth;
             int startX = (halfWidth - rowWidth) / 2;
 
             for(int col = 0; col < buttonsInRow; col++){
-                int x = startX + col * (BUTTON_WIDTH + GAP);
-                stagesButtons.add(new SelectButton(x, currentYStages, BUTTON_WIDTH, BUTTON_HEIGHT, col, stagesList.get(row).getSelectImage()));
+                int x = startX + col * (buttonWidth + GAP);
+                stagesButtons.add(new SelectButton(x, currentYStages, buttonWidth, B_STONE_SELECT_HEIGHT, col, stagesList.get(row).getSelectImage()));
                 row++;
             }
-            currentYStages += BUTTON_HEIGHT + GAP;
+            currentYStages += B_STONE_SELECT_HEIGHT + GAP;
         }
 
         for(int i = 0; i < playerCharacterList.size();){
             int buttonsInRow = Math.min(MAX_PER_ROW, playerCharacterList.size() - i);
-            int rowWidth = buttonsInRow * BUTTON_WIDTH + (buttonsInRow - 1) * GAP;
+            int totalGapWidth = (buttonsInRow - 1) * GAP;
+            int maxAllowedWidth = halfWidth - totalGapWidth;
 
+            int buttonWidth = B_STONE_SELECT_WIDTH;
+            if (buttonsInRow * B_STONE_SELECT_WIDTH > maxAllowedWidth) {
+                buttonWidth = maxAllowedWidth / buttonsInRow;
+            }
+
+            int rowWidth = buttonsInRow * buttonWidth + totalGapWidth;
             int startX = halfWidth + (halfWidth - rowWidth) / 2;
 
             for(int col = 0; col < buttonsInRow; col++){
-                int x = startX + col * (BUTTON_WIDTH + GAP);
-                characterButtons.add(new SelectButton(x, currentYCharacters, BUTTON_WIDTH, BUTTON_HEIGHT, i, LoadSave.GetSpriteAtlas(playerCharacterList.get(i).getSelectImage())));
+                int x = startX + col * (buttonWidth + GAP);
+                characterButtons.add(new SelectButton(x, currentYCharacters, buttonWidth, B_STONE_SELECT_HEIGHT, i, LoadSave.GetSpriteAtlas(playerCharacterList.get(i).getSelectImage())));
                 i++;
             }
-            currentYCharacters += BUTTON_HEIGHT + GAP;
+            currentYCharacters += B_STONE_SELECT_HEIGHT + GAP;
 
         }
     }
@@ -144,6 +159,28 @@ public class Lobby extends State implements StateMethods {
 
         for(SelectButton characterButton : characterButtons){
             characterButton.draw(g);
+        }
+    }
+
+    private void drawPlayerStatus(Graphics g){
+        if(client != null){
+            if(client.isClientReady() && !client.isHostReady()){
+                g.drawImage(LoadSave.GetSpriteAtlas(LOBBY_INFO_BACKGROUND), Game.GAME_WIDTH / 8 - 5 + menuWidth, 2*Game.GAME_HEIGHT/3 - 30, Game.GAME_WIDTH/4 - 30, B_HEIGHT_STONE_SERVER_DEFAULT, null);
+                g.setFont(new Font("Arial", Font.BOLD, 15));
+                g.drawString("Waiting for P1 to ready up...", Game.GAME_WIDTH / 8 + menuWidth + 5, 2*Game.GAME_HEIGHT/3);
+            }
+        }
+        if(server != null){
+            if(server.isHostReady() && !server.isClientReady()){
+                g.drawImage(LoadSave.GetSpriteAtlas(LOBBY_INFO_BACKGROUND), Game.GAME_WIDTH / 8 - 5 + menuWidth, 2*Game.GAME_HEIGHT/3 - 30, Game.GAME_WIDTH/4 - 30, B_HEIGHT_STONE_SERVER_DEFAULT, null);
+                g.setFont(new Font("Arial", Font.BOLD, 15));
+                g.drawString("Waiting for P2 to ready up...", Game.GAME_WIDTH / 8 + menuWidth + 5, 2*Game.GAME_HEIGHT/3);
+            }
+            if(server.getClientSocket() == null){
+                g.drawImage(LoadSave.GetSpriteAtlas(LOBBY_INFO_BACKGROUND), Game.GAME_WIDTH / 8 - 5 + menuWidth, 2*Game.GAME_HEIGHT/3 - 30, Game.GAME_WIDTH/4 - 30, B_HEIGHT_STONE_SERVER_DEFAULT, null);
+                g.setFont(new Font("Arial", Font.BOLD, 15));
+                g.drawString("Waiting for another player to join...", Game.GAME_WIDTH / 8 + menuWidth + 5, 2*Game.GAME_HEIGHT/3);
+            }
         }
     }
 
@@ -192,19 +229,16 @@ public class Lobby extends State implements StateMethods {
                         game.getPlaying().setPlayerCharacter(playerCharacterList.get(characterIndex));
                         game.getPlaying().resetAll();
                         System.out.println(playerCharacterList.get(characterIndex));
-                        startMatchButton.setMousePressed(true);
-                        server.setHostReady_CheckStart(true);
+//                        startMatchButton.setMousePressed(true);
+                        server.sendReady(true);
                     }
                 } else if (client != null) {
                     if(characterIndex != -1 && stageIndex != -1){
+                        game.getPlaying().resetAll();
                         client.sendReady();
                         System.out.println("Client is Ready");
                     }
                 }
-
-//                game.getPlaying().setPlayerCharacter(playerCharacterList.get(characterIndex));
-//                game.getPlaying().resetAll();
-//                System.out.println(playerCharacterList.get(characterIndex));
                 startMatchButton.setMousePressed(true);
             }
             for(SelectButton stagesButton : stagesButtons){
@@ -213,6 +247,7 @@ public class Lobby extends State implements StateMethods {
                     stageIndex = stagesButton.getSelectIndex();
                     game.getPlaying().getLevelManager().setStageIndex(stageIndex);
                     if(server != null) {
+                        System.out.println("Stage index is " + stageIndex);
                         server.broadcastStageSelection(stageIndex);
                     }
                     stagesButton.setMousePressed(true);
@@ -240,13 +275,17 @@ public class Lobby extends State implements StateMethods {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if(isIn(e, startMatchButton)){
-            if(startMatchButton.isMousePressed()){
-                if((server != null && server.getPlayersReady()) || (client != null && client.getPlayersReady())){
-                    startMatchButton.applyGameState();
-                }
 
+        if(isIn(e, startMatchButton) && startMatchButton.isMousePressed()){
+            if (client != null) {
+                System.out.println("Client MouseReleased - charIndex: " + characterIndex + " stageIndex: " + stageIndex);
+                if (characterIndex != -1 && stageIndex != -1) {
+                    client.sendReady();
+                }
             }
+                if(server != null && server.getPlayersReady()){
+                    server.sendReady(true);
+                }
         }
         startMatchButton.resetBooleans();
     }

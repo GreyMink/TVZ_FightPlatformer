@@ -53,7 +53,7 @@ public class Playing extends State implements StateMethods {
         super(game);
         initClasses();
 
-        backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.TEMPLE_STAGE_BACKGROUND);
+        backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_MOUNTAIN);
         loadStageObjects();
     }
     @Override
@@ -91,7 +91,8 @@ public class Playing extends State implements StateMethods {
             pauseOverlay.draw(g);
         }else if(gameOver){
             gameOverOverlay.draw(g);
-        }else if(matchEnd){
+        }
+        else if(matchEnd){
             matchFinishedOverlay.draw(g);
         }
     }
@@ -161,10 +162,10 @@ public class Playing extends State implements StateMethods {
         if (hostPlayer.isAttacking()) mask |= (1<<5);
 
         if(game.getLobby().getServer() != null){
-            game.getLobby().getServer().sendInput(System.nanoTime(), mask);
+            game.getLobby().getServer().sendInputUDP(System.nanoTime(), mask);
         }
         if(game.getLobby().getClient() != null){
-            game.getLobby().getClient().sendInput(System.nanoTime(), mask);
+            game.getLobby().getClient().sendInputUDP(System.nanoTime(), mask);
         }
     }
     public void applyNetworkStateFromServer(float p0x, float p0y, float p0vx, float p0vy, float p0health, float p1x, float p1y, float p1vx, float p1vy, float p1health) {
@@ -243,6 +244,17 @@ public class Playing extends State implements StateMethods {
     }
     //endregion
 
+    public void exitToMenu() {
+        // tell network peer first
+        if (game.getLobby().getClient() != null) {
+            game.getLobby().getClient().sendExit();
+        }
+        if (game.getLobby().getServer() != null) {
+            game.getLobby().getServer().sendExitToClients();
+        }
+
+        Gamestate.state = Gamestate.MENU;
+    }
 
 
     //region Inputs
@@ -328,7 +340,7 @@ public class Playing extends State implements StateMethods {
                     hostPlayer.dashMove();
                     break;
                 case KeyEvent.VK_P:
-                    setMatchEnd(true);
+                    exitToMenu();
                     break;
             }
         }
@@ -410,10 +422,11 @@ public class Playing extends State implements StateMethods {
         int remoteLives = remotePlayer.getLives();
 
         if (hostLives <= 0 || remoteLives <= 0) {
-            // show match overlay
+            // postavi varijablu za određivanje kraja borbe i prikaza MatchFinishedOverlay
             matchEnd = true;         // triggers MatchFinishedOverlay
             // optionally tell overlay who won:
-//            matchFinishedOverlay.setWinner(hostLives > 0 ? hostNumber : remoteNumber);
+            matchFinishedOverlay.setWinner(hostLives > 0 ? hostNumber : remoteNumber);
+            matchFinishedOverlay.setWinnerCharacter(hostLives > 0 ? hostPlayer.getPlayerCharacter() : remotePlayer.getPlayerCharacter());
         }
     }
     //endregion

@@ -68,7 +68,7 @@ public class Constants {
 
         //Knockback
         public static final float BASE_KNOCKBACK = 3.0f;
-        public static final float KNOCKBACK_SCALING = 0.1f;
+        public static final float KNOCKBACK_SCALING = 0.2f;
 
     }
 
@@ -78,6 +78,21 @@ public class Constants {
             public static final int B_HEIGHT_DEFAULT = 56;
             public static final int B_WIDTH = (int) (B_WIDTH_DEFAULT * Game.SCALE);
             public static final int B_HEIGHT = (int) (B_HEIGHT_DEFAULT * Game.SCALE);
+
+            public static final int B_WIDTH_STONE_DEFAULT = 182;
+            public static final int B_HEIGHT_STONE_DEFAULT = 64;
+            public static final int B_STONE_WIDTH = (int) (B_WIDTH_STONE_DEFAULT * Game.SCALE);
+            public static final int B_STONE_HEIGHT = (int) (B_HEIGHT_STONE_DEFAULT * Game.SCALE);
+
+            public static final int B_WIDTH_STONE_SERVER_DEFAULT = 364;
+            public static final int B_HEIGHT_STONE_SERVER_DEFAULT = 64;
+            public static final int B_STONE_SERVER_WIDTH = (int) (B_WIDTH_STONE_SERVER_DEFAULT * Game.SCALE);
+            public static final int B_STONE_SERVER_HEIGHT = (int) (B_HEIGHT_STONE_SERVER_DEFAULT * Game.SCALE);
+
+            public static final int B_WIDTH_STONE_SELECT_DEFAULT = 96;
+            public static final int B_HEIGHT_STONE_SELECT_DEFAULT = 64;
+            public static final int B_STONE_SELECT_WIDTH = (int) (B_WIDTH_STONE_SELECT_DEFAULT * Game.SCALE);
+            public static final int B_STONE_SELECT_HEIGHT = (int) (B_HEIGHT_STONE_SELECT_DEFAULT * Game.SCALE);
         }
 
         public static class PauseButtons{
@@ -86,7 +101,7 @@ public class Constants {
         }
 
         public static class URMButtons {
-            public static final int URM_DEFAULT_SIZE = 56;
+            public static final int URM_DEFAULT_SIZE = 64;
             public static  final int URM_SIZE = (int)(URM_DEFAULT_SIZE * Game.SCALE);
         }
 

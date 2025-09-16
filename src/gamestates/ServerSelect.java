@@ -3,8 +3,8 @@ package gamestates;
 import main.Game;
 import network.Client;
 import ui.MenuButton;
-import ui.SelectButton;
 import ui.ServerButton;
+import utils.LoadSave;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,16 +13,15 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static utils.Constants.UI.Buttons.B_WIDTH;
+import static utils.Constants.UI.Buttons.*;
 
 public class ServerSelect extends State implements StateMethods {
 
-    private BufferedImage serverImg, serverImgBack;
+    private BufferedImage backgroundImg, backgroundImgBack;
     private int menuX, menuY, menuWidth, menuHeight;
     private int selectX, selectY, selectWidth, selectHeight;
     private ArrayList<Client.DiscoveredServer> servers;
@@ -30,13 +29,10 @@ public class ServerSelect extends State implements StateMethods {
     private ScheduledExecutorService discoveryExecutor;
     private int serverIndex;
 
+
+
     private ArrayList<ServerButton> serverButtons = new ArrayList<>();
     private MenuButton[] menuButtons = new  MenuButton[2];
-
-    private static final int BUTTON_WIDTH = 120;
-    private static final int BUTTON_HEIGHT = 80;
-    private static final int GAP = 20;
-
 
     public ServerSelect(Game game) {
         super(game);
@@ -56,7 +52,8 @@ public class ServerSelect extends State implements StateMethods {
 
     @Override
     public void draw(Graphics g) {
-        g.drawImage(serverImgBack, 0,0,Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+        g.drawImage(backgroundImgBack, 0,0,Game.GAME_WIDTH, Game.GAME_HEIGHT, null);
+        g.drawImage(backgroundImg, menuX,menuY,Game.GAME_WIDTH/2, Game.GAME_HEIGHT/2, null);
 
         for(MenuButton button : menuButtons) {
             button.draw(g);
@@ -67,32 +64,27 @@ public class ServerSelect extends State implements StateMethods {
     }
 
     private void loadBackgrounds() {
-        serverImgBack = new BufferedImage(Game.GAME_WIDTH, Game.GAME_HEIGHT, BufferedImage.TYPE_INT_RGB);
+        backgroundImgBack = LoadSave.GetSpriteAtlas(LoadSave.BACKGROUND_STONE_HENGE);
+        backgroundImg = LoadSave.GetSpriteAtlas(LoadSave.SERVER_SEARCH_MENU_STONE);
+
+        menuWidth = (int)(backgroundImg.getWidth() * Game.SCALE);
+        menuHeight = (int)(backgroundImg.getHeight() * Game.SCALE);
+        menuX = Game.GAME_WIDTH / 2 - menuWidth / 2 - 50;
+        menuY = (int) (35 * Game.SCALE);
+
     }
 
     private void loadButtons() {
-        int halfWidth = Game.GAME_WIDTH / 2;
         int yOffset = (int) (340 * Game.SCALE);
         int GAP = 20;
         //2 gumba u redu * njihova širina + razmak
-        int rowWidth = 2 * menuWidth + GAP;
-        int exitX = (halfWidth - rowWidth);
-        int joinX = exitX + B_WIDTH + GAP;
+        int rowWidth = (2 * B_STONE_WIDTH) + GAP;
+        int startX = (Game.GAME_WIDTH - rowWidth) / 2;
+        int joinX = startX + B_STONE_WIDTH + GAP;
         //EXIT Button
-        menuButtons[0] = new MenuButton(exitX, yOffset, 2, Gamestate.MENU);
+        menuButtons[0] = new MenuButton(startX, yOffset, 2, Gamestate.MENU);
         //JOIN Button
-        menuButtons[1] = new MenuButton(joinX,  yOffset, 0, Gamestate.SELECT_LOBBY);
-
-
-        //Server Buttons
-//        int xServerSelect = Game.GAME_WIDTH / 4;
-//        int yServerOffset = (int) (80 * Game.SCALE);
-//
-//        if(servers != null) {
-//            for(int i = 0; i < servers.size(); i++){
-//                serverButtons.add(new ServerButton(xServerSelect, ((i+1) * yServerOffset) + GAP, halfWidth, BUTTON_HEIGHT, i, servers.get(i).getName()));
-//            }
-//        }
+        menuButtons[1] = new MenuButton(joinX,  yOffset, 3, Gamestate.SELECT_LOBBY);
     }
 
     private void rebuildServerButtons() {
@@ -106,10 +98,10 @@ public class ServerSelect extends State implements StateMethods {
         System.out.println("Server Select:" + servers.getFirst().getName());
         for (int i = 0; i < servers.size(); i++) {
             ServerButton button = new ServerButton(
-                    xServerSelect,
-                    ((i + 1) * yServerOffset) + GAP,
+                    Game.GAME_WIDTH / 2,
+                    ((i + 1) * yServerOffset),
                     halfWidth,
-                    BUTTON_HEIGHT,
+                    B_STONE_SERVER_HEIGHT,
                     i,
                     servers.get(i).getName()
                 );
@@ -127,7 +119,6 @@ public class ServerSelect extends State implements StateMethods {
 
     public void startDiscovery() {
         if (client == null) return;
-//        stopDiscovery();
         System.out.println("Start discovery");
 
         discoveryExecutor = Executors.newSingleThreadScheduledExecutor();

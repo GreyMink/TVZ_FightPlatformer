@@ -1,13 +1,17 @@
 package ui;
 
+import utils.LoadSave;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import static utils.Constants.UI.Buttons.*;
+
 public class SelectButton extends BasicButton implements UImethods{
 
-    private BufferedImage buttonImg;
+    private BufferedImage[] imgs;
     private BufferedImage buttonContentImg;
-
+    private int xOffsetCenter = B_STONE_SERVER_WIDTH / 2;
     private int buttonState;
     private int selectIndex;
 
@@ -31,31 +35,29 @@ public class SelectButton extends BasicButton implements UImethods{
 
     @Override
     public void draw(Graphics g) {
-        if(buttonState == 0){
-            g.setColor(new Color(188, 86, 82));
-            g.drawRect(x, y, width, height);
-            g.fillRect(x, y, width, height);
+        g.drawImage(imgs[buttonState],x, y, B_STONE_SELECT_WIDTH,B_STONE_SELECT_HEIGHT, null);
 
-//            g.setColor(Color.YELLOW);
-//            g.drawRect(x+10, y+10, width - 20, height - 20);
-//            g.fillRect(x+10, y+10, width - 20, height - 20);
-            g.drawImage(buttonContentImg, x+10, y+10, width - 20, height - 20, null);
-        }
-        else if(buttonState == 1){
-            g.setColor(Color.BLUE);
-            g.drawRect(x, y, width, height);
-            g.fillRect(x, y, width, height);
+        int contentWidth  = B_STONE_SELECT_WIDTH - 30;
+        int contentHeight = B_STONE_SELECT_HEIGHT - 30;
 
-//            g.setColor(Color.YELLOW);
-//            g.drawRect(x+10, y+10, width - 20, height - 20);
-//            g.fillRect(x+10, y+10, width - 20, height - 20);
-            g.drawImage(buttonContentImg, x+10, y+10, width - 20, height - 20, null);
-        }
+// compute the center of the button
+        int buttonCenterX = x + (B_STONE_SELECT_WIDTH / 2);
+        int buttonCenterY = y + (B_STONE_SELECT_HEIGHT / 2);
+
+// compute the top-left of the content so it’s centered
+        int contentX = buttonCenterX - (contentWidth / 2);
+        int contentY = buttonCenterY - (contentHeight / 2);
+        g.drawImage(buttonContentImg, contentX, contentY, contentWidth, contentHeight, null);
+
     }
 
     @Override
     public void loadButtonImgs() {
-
+        imgs = new BufferedImage[2];
+        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.SELECT_BUTTONS_STONE);
+        for(int i = 0; i < imgs.length;i++){
+            imgs[i] = temp.getSubimage(i * B_WIDTH_STONE_SELECT_DEFAULT, 0,B_WIDTH_STONE_SELECT_DEFAULT,B_HEIGHT_STONE_SELECT_DEFAULT);
+        }
     }
 
     public void reset(){
@@ -68,6 +70,5 @@ public class SelectButton extends BasicButton implements UImethods{
     public int getSelectIndex() {return selectIndex;}
     public void setSelectIndex(int selectIndex) {this.selectIndex = selectIndex;}
     public void setButtonContentImg(BufferedImage buttonContentImg) {this.buttonContentImg = buttonContentImg;}
-    public void setButtonImg(BufferedImage buttonImg) {this.buttonImg = buttonImg;}
     //endregion
 }

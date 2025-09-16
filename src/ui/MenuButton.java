@@ -11,7 +11,7 @@ import static utils.Constants.UI.Buttons.*;
 public class MenuButton implements UImethods{
     private final int xPos, yPos;
     private int rowIndex, index;
-    private int xOffsetCenter = B_WIDTH / 2;
+    private int xOffsetCenter = B_STONE_WIDTH / 2;
     private Gamestate state;
     private BufferedImage[] imgs;
     private boolean mouseOver, mousePressed;
@@ -27,7 +27,7 @@ public class MenuButton implements UImethods{
     }
 
     private void initBounds() {
-        bounds = new Rectangle(xPos - xOffsetCenter, yPos, B_WIDTH, B_HEIGHT);
+        bounds = new Rectangle(xPos - xOffsetCenter, yPos, B_STONE_WIDTH, B_STONE_HEIGHT);
     }
 
     /*private void loadImgs(){
@@ -41,9 +41,9 @@ public class MenuButton implements UImethods{
     @Override
     public void loadButtonImgs() {
         imgs = new BufferedImage[3];
-        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.MENU_BUTTONS);
+        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.MENU_BUTTONS_STONE);
         for(int i = 0; i < imgs.length;i++){
-            imgs[i] = temp.getSubimage(i * B_WIDTH_DEFAULT,rowIndex * B_HEIGHT_DEFAULT,B_WIDTH_DEFAULT,B_HEIGHT_DEFAULT);
+            imgs[i] = temp.getSubimage(i * B_WIDTH_STONE_DEFAULT,rowIndex * B_HEIGHT_STONE_DEFAULT,B_WIDTH_STONE_DEFAULT,B_HEIGHT_STONE_DEFAULT);
         }
     }
 
@@ -58,7 +58,7 @@ public class MenuButton implements UImethods{
     }
 
     public void draw(Graphics g){
-        g.drawImage(imgs[index], xPos - xOffsetCenter, yPos, B_WIDTH,B_HEIGHT, null);
+        g.drawImage(imgs[index], xPos - xOffsetCenter, yPos, B_STONE_WIDTH,B_STONE_HEIGHT, null);
     }
 
     //region Getters & Setters

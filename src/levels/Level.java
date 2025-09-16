@@ -18,7 +18,7 @@ public class Level {
     private int[][] lvlData;
 
     private ArrayList<GameContainer> containers;
-    private ArrayList<Spike> spikes;
+    private ArrayList<Spike> spikes = new ArrayList<>();
 
     private ArrayList<Point> spawnPoints;
     private Point playerSpawn;
@@ -48,13 +48,14 @@ public class Level {
 
                 loadLevelData(red, x, y);
                 loadEntities(green, x, y);
-//                loadObjects(blue, x, y);
+                loadObjects(blue, x, y);
             }
         }
 
     }
     private void loadLevelData(int redValue, int x, int y) {
-        if(redValue >= 50)
+        lvlData = new int[Game.TILES_IN_HEIGHT][Game.TILES_IN_WIDTH];
+        if(redValue >= 48)
             lvlData[y][x] = 0;
         else
             lvlData[y][x] = redValue;
@@ -71,7 +72,6 @@ public class Level {
         switch(blueValue){
             case BOX, BARREL -> containers.add(new GameContainer(x * Game.TILES_SIZE, y * Game.TILES_SIZE, blueValue));
             case SPIKE -> spikes.add(new Spike(x * Game.TILES_SIZE, y * Game.TILES_SIZE, blueValue));
-            default -> throw new IllegalStateException("Unexpected value: " + blueValue);
         }
     }
 

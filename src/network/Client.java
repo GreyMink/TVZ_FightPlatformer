@@ -15,14 +15,23 @@ public class Client {
     private Socket tcpSocket;
     private DataOutputStream dos;
     private DataInputStream dis;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private volatile boolean running = false;
+
+    //UDP
+    private DatagramSocket udpSocket;
+    private InetAddress serverUdpAddress;
+    private int serverUdpPort;
+    private long lastInputSeqFromServer = -1;
+    private long seqCounter = 0;
+
+
+    private boolean clientReady = false;
+    private boolean hostReady = false;
 
     private final Game game;
     private final Playing playing;
 
-    private boolean clientReady = false;
-    private boolean hostReady = false;
 
     public Client(Game game) {
         this.game = game;
@@ -61,69 +70,140 @@ public class Client {
     }
 
     public void connect(String host, int port) throws IOException {
+        //otvara tcp port i input/output streamove za komunikaciju
         tcpSocket = new Socket(host, port);
         dos = new DataOutputStream(new BufferedOutputStream(tcpSocket.getOutputStream()));
         dis = new DataInputStream(new BufferedInputStream(tcpSocket.getInputStream()));
+
+        //otvara udp port na 1 milisekundu
+        udpSocket = new DatagramSocket(0); // port 0 -> dodijeli slobodan port
+        udpSocket.setSoTimeout(20);
+        // pošalji info o udp portu serveru
+        dos.writeInt(udpSocket.getLocalPort());
+        dos.flush();
+
+        serverUdpPort = dis.readInt();
+        serverUdpAddress = InetAddress.getByName(host);
+        System.out.println("Server UDP port: " + serverUdpPort);
         running = true;
 
-        // Start reader thread
-        executor.submit(() -> {
-            try {
-                while (running && !tcpSocket.isClosed()) {
-                    byte type = dis.readByte();
-                    switch (type) {
-                        case TYPE_INPUT -> {
-                            long seq = dis.readLong();
-//                            int playerIndex = dis.readInt();
-                            int mask = dis.readInt();
-                            // parse optional floats if you used them
-                            // Apply client input to remote player (player index 1)
-                            applyServerInput(mask);
+        executor.submit(this::udpReceiveLoop);
+        // pokrće se TCP
+        executor.submit(this::tcpReaderLoop);
+    }
+
+    private void tcpReaderLoop() {
+        try {
+            while (running && !tcpSocket.isClosed()) {
+                byte type = dis.readByte();
+                switch (type) {
+                    case TYPE_CHAR_SELECT -> {
+                        System.out.println("server send char data");
+                        int playerIndex = dis.readInt();
+                        int charIndex = dis.readInt();
+                        System.out.println("Host send char data: "+ playerIndex + " " + charIndex);
+                        if (playerIndex == 1) {
+                            game.getPlaying().setPlayerCharacter(game.getLobby().getPlayerCharacterList().get(charIndex));
                         }
-                        case TYPE_STATE -> {
-//                            long tick = dis.readLong();
-                            float p0x = dis.readFloat();
-                            float p0y = dis.readFloat();
-//                            float p0vx = dis.readFloat();
-//                            float p0vy = dis.readFloat();
-                            float p0health = dis.readFloat();
-                            float p1x = dis.readFloat();
-                            float p1y = dis.readFloat();
-//                            float p1vx = dis.readFloat();
-//                            float p1vy = dis.readFloat();
-                            float p1health = dis.readFloat();
-                        }
-                        case TYPE_CHAR_SELECT -> {
-                            int playerIndex = dis.readInt();
-                            int charIndex = dis.readInt();
-                            System.out.println("Host send char data: "+ playerIndex + " " + charIndex);
-                            if (playerIndex == 1) {
-                                game.getPlaying().setPlayerCharacter(game.getLobby().getPlayerCharacterList().get(charIndex));
-                            }
-                            else{
-                                game.getPlaying().setRemotePlayerCharacter(game.getLobby().getPlayerCharacterList().get(charIndex));
-                            }
-                        }
-                        case TYPE_STAGE_SELECT -> {
-                            int stageIndex = dis.readInt();
-                            System.out.println("Host choose stage: " + stageIndex);
-                            game.getLobby().setStageIndex(stageIndex);
-                            game.getPlaying().getLevelManager().setStageIndex(stageIndex);
-                        }
-                        case TYPE_START -> {
-                            game.getPlaying().getHostPlayer().setSpawn(game.getPlaying().getLevelManager().getCurrentStage().getRemotePlayerSpawn());
-                            game.getPlaying().getRemotePlayer().setSpawn(game.getPlaying().getLevelManager().getCurrentStage().getPlayerSpawn());
-                            game.getPlaying().getHostPlayer().setFlipW(-1);
-                            Gamestate.state = Gamestate.PLAYING;
+                        else{
+                            game.getPlaying().setRemotePlayerCharacter(game.getLobby().getPlayerCharacterList().get(charIndex));
                         }
                     }
+                    case TYPE_STAGE_SELECT -> {
+                        System.out.println("Stage send stage data");
+                        int stageIndex = dis.readInt();
+                        System.out.println("Host choose stage: " + stageIndex);
+                        game.getLobby().setStageIndex(stageIndex);
+                        game.getPlaying().getLevelManager().setStageIndex(stageIndex);
+                    }
+                    case TYPE_READY -> {
+                        boolean hostReady = dis.readBoolean();
+                        System.out.println("Client received ready: " + hostReady);
+                        setHostReady(hostReady);
+                    }
+                    case TYPE_START -> {
+                        System.out.println("Client received start");
+                        game.getPlaying().getHostPlayer().setSpawn(game.getPlaying().getLevelManager().getCurrentStage().getRemotePlayerSpawn());
+                        game.getPlaying().getRemotePlayer().setSpawn(game.getPlaying().getLevelManager().getCurrentStage().getPlayerSpawn());
+                        game.getPlaying().getHostPlayer().setFlipW(-1);
+                        Gamestate.state = Gamestate.PLAYING;
+                    }
+                    case TYPE_EXIT ->{
+                        System.out.println("Received exit message from server");
+                        try {
+                            tcpSocket.close();
+                            udpSocket.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Gamestate.state = Gamestate.MENU;
+                        playing.setMatchEnd(false);
+                    }
                 }
+            }
+        } catch (IOException e) {
+            System.out.println("Lost connection to server: " + e.getMessage());
+            closeConnections();
+            Gamestate.state = Gamestate.MENU;
+        } finally {
+            disconnect();
+        }
+    }
+
+    private void closeConnections() {
+        try { tcpSocket.close(); } catch (IOException ignored) {}
+        udpSocket.close();
+    }
+
+    private void udpReceiveLoop() {
+        byte[] buf = new byte[512];
+        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+        while (running) {
+            try {
+                udpSocket.receive(packet);
+                DataInputStream dis = new DataInputStream(
+                        new ByteArrayInputStream(packet.getData(), 0, packet.getLength()));
+                byte type = dis.readByte();
+                switch (type) {
+                    case TYPE_INPUT -> {
+                        long seq = dis.readLong();
+                        int mask = dis.readInt();
+                        if (seq > lastInputSeqFromServer) {
+                            lastInputSeqFromServer = seq;
+                            applyServerInput(mask);
+                        }
+                    }
+                    case TYPE_STATE -> {
+                        long tick = dis.readLong();
+                        float p0x = dis.readFloat();
+                        float p0y = dis.readFloat();
+                        float p1x = dis.readFloat();
+                        float p1y = dis.readFloat();
+                    }
+                }
+            } catch (SocketTimeoutException ignored) {
             } catch (IOException e) {
                 if (running) e.printStackTrace();
-            } finally {
-                disconnect();
             }
-        });
+        }
+    }
+
+    public void sendInputUDP(long seq, int mask) {
+        if (udpSocket == null) return;
+        seqCounter++;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(baos);
+            out.writeByte(TYPE_INPUT);
+            out.writeLong(seq);
+            out.writeInt(mask);
+            byte[] data = baos.toByteArray();
+            DatagramPacket packet = new DatagramPacket(
+                    data, data.length, serverUdpAddress, serverUdpPort);
+            udpSocket.send(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void applyServerInput(int mask) {
@@ -132,22 +212,19 @@ public class Client {
         }
     }
 
-    // send input (bitmask)
-    public void sendInput(long seq, int mask) {
-        if (dos == null) return;
+    public void sendExit() {
         try {
-            dos.writeByte(NetworkProtocol.TYPE_INPUT);
-            dos.writeLong(seq);
-            dos.writeInt(mask);
+            dos.writeByte(TYPE_EXIT);
             dos.flush();
+            System.out.println("Client sent exit message.");
         } catch (IOException e) {
             e.printStackTrace();
-            disconnect();
         }
     }
 
     public void disconnect() {
         running = false;
+        if (udpSocket != null) udpSocket.close();
         try { if (tcpSocket != null) tcpSocket.close(); } catch (IOException ignored) {}
     }
     public void sendCharacterSelection(int charIndex) {
@@ -163,6 +240,35 @@ public class Client {
         }
     }
 
+    public void setClientReady_CheckStart(boolean ready) {
+        clientReady = ready;
+        if (dos != null) {
+            try {
+                synchronized (dos) {
+                    dos.writeByte(TYPE_READY);
+                    dos.writeBoolean(ready);
+                    dos.flush();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Server send ready");
+        checkStartGame();
+    }
+
+    private void checkStartGame() {
+        System.out.println("Starting game - host : " + hostReady + "- client: " + clientReady);
+        if (hostReady && clientReady) {
+            game.getPlaying().resetAll();
+            // stvara instance igrača i prebacuje ekran na odabranu arenu
+            game.getPlaying().getHostPlayer().setSpawn(game.getPlaying().getLevelManager().getCurrentStage().getRemotePlayerSpawn());
+            game.getPlaying().getRemotePlayer().setSpawn(game.getPlaying().getLevelManager().getCurrentStage().getPlayerSpawn());
+            game.getPlaying().getHostPlayer().setFlipW(-1);
+            Gamestate.state = Gamestate.PLAYING;
+        }
+    }
+
     public void sendReady() {
         if (dos == null) return;
         try {
@@ -171,13 +277,18 @@ public class Client {
             dos.writeByte(TYPE_READY);
             dos.writeBoolean(clientReady);
             dos.flush();
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        checkStartGame();
     }
 
     public boolean isHostReady() {return hostReady;}
-    public void setHostReady(boolean hostReady) {this.hostReady = hostReady;}
+    public void setHostReady(boolean hostReady) {
+        this.hostReady = hostReady;
+        checkStartGame();
+    }
     public boolean isClientReady() {return clientReady;}
     public void setClientReady(boolean clientReady) {this.clientReady = clientReady;}
     public boolean getPlayersReady() {return hostReady && clientReady;}

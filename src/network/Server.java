@@ -26,6 +26,12 @@ public class Server {
     //UDP discovery
     private DatagramSocket announceSocket;
     private ScheduledExecutorService announcer;
+    //UDP messaging
+    private DatagramSocket udpSocket;
+    private InetAddress clientUdpAddress;
+    private int clientUdpPort;
+    private long lastInputSeqFromClient = -1;
+    private long seqCounter = 0;
 
     private boolean clientReady = false;
     private boolean hostReady = false;
@@ -42,8 +48,10 @@ public class Server {
     public void start() throws IOException {
         running.set(true);
         serverSocket = new ServerSocket(tcpPort);
+        udpSocket = new DatagramSocket(0); // 0 -> bilo koji slobodni port
         startAnnouncer();
-        System.out.println("Server started on port " + tcpPort);
+        System.out.println("Server started on TCP " + tcpPort + " UDP " + udpSocket.getLocalPort());
+        executor.submit(this::udpReceiveLoop);
 
         // accept client in background
         executor.submit(() -> {
@@ -51,11 +59,51 @@ public class Server {
                 System.out.println("Server: waiting for client on port " + tcpPort);
                 clientSocket = serverSocket.accept();
                 System.out.println("Server: client connected: " + clientSocket.getInetAddress());
-                handleClient(clientSocket);
+                handleClientHandshake(clientSocket);
+                handleClientTCP(clientSocket);
+            } catch (IOException e) {if (running.get()) e.printStackTrace();}
+        });
+    }
+
+    private void udpReceiveLoop() {
+        byte[] buf = new byte[512];
+        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+        while (running.get()) {
+            try {
+                udpSocket.receive(packet);
+                DataInputStream dis = new DataInputStream(
+                        new ByteArrayInputStream(packet.getData(), 0, packet.getLength()));
+                byte type = dis.readByte();
+                switch (type) {
+                    case TYPE_INPUT -> {
+                        long seq = dis.readLong();
+                        int mask = dis.readInt();
+                        // odbaci duplikate
+                        if (seq > lastInputSeqFromClient) {
+                            lastInputSeqFromClient = seq;
+                            applyClientInput(mask);
+                        }
+                    }
+
+
+                }
+            } catch (SocketTimeoutException ignored) {
             } catch (IOException e) {
                 if (running.get()) e.printStackTrace();
             }
-        });
+        }
+    }
+
+    private void handleClientHandshake(Socket clientSocket) throws IOException {
+        DataInputStream dis = new DataInputStream(clientSocket.getInputStream());
+        DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
+        //čitaj klijent UDP port
+        int clientPort = dis.readInt();
+        clientUdpPort = clientPort;
+        clientUdpAddress = clientSocket.getInetAddress();
+        //šalje serverov UDP port klijentu
+        dos.writeInt(udpSocket.getLocalPort());
+        dos.flush();
     }
 
     private void startAnnouncer() throws SocketException {
@@ -80,7 +128,7 @@ public class Server {
         }, 0, 1, TimeUnit.SECONDS);
     }
 
-    private void handleClient(Socket socket) throws IOException {
+    private void handleClientTCP(Socket socket) throws IOException {
         try {
             DataInputStream dis = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             dos = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
@@ -90,12 +138,6 @@ public class Server {
                     while (running.get() && !socket.isClosed()) {
                         byte type = dis.readByte();
                         switch (type) {
-                            case TYPE_INPUT -> {
-                                long seq = dis.readLong();
-//                                int playerIndex = dis.readInt();
-                                int mask = dis.readInt();
-                                applyClientInput(mask);
-                            }
                             case TYPE_CHAR_SELECT -> {
                                 int playerIndex = dis.readInt();
                                 int charIndex = dis.readInt();
@@ -106,7 +148,15 @@ public class Server {
                                 boolean ready = dis.readBoolean();
                                 setClientReady(ready);
                             }
-                            case TYPE_EXIT_PLAY ->{
+                            case TYPE_EXIT ->{
+                                System.out.println("Client disconnected");
+                                broadcastExit();
+                                try {
+                                    clientSocket.close();
+                                    udpSocket.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }
@@ -133,61 +183,53 @@ public class Server {
             game.getPlaying().setRemoteInputMask(mask);
         }
     }
-    public void sendInput(long seq, int mask) {
-        if (dos == null) return;
+    public void sendInputUDP(long seq, int mask) {
+        if (udpSocket == null) return;
+        seqCounter++;
         try {
-            dos.writeByte(NetworkProtocol.TYPE_INPUT);
-            dos.writeLong(seq);
-            dos.writeInt(mask);
-            dos.flush();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(baos);
+            out.writeByte(TYPE_INPUT);
+            out.writeLong(seq);
+            out.writeInt(mask);
+            byte[] data = baos.toByteArray();
+            DatagramPacket packet = new DatagramPacket(
+                    data, data.length, clientUdpAddress, clientUdpPort);
+            udpSocket.send(packet);
+            } catch (IOException e) {
+                e.printStackTrace();
+                closeClient();
+            }
+    }
+    public void sendStateSnapshotUDP() {
+        if (clientUdpAddress == null) return;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(baos);
+            out.writeByte(TYPE_STATE);
+            out.writeLong(System.currentTimeMillis());
+            out.writeFloat(playing.getHostPlayer().getX());
+            out.writeFloat(playing.getHostPlayer().getY());
+            if (playing.getRemotePlayer() != null) {
+                out.writeFloat(playing.getRemotePlayer().getX());
+                out.writeFloat(playing.getRemotePlayer().getY());
+            } else {
+                out.writeFloat(0); out.writeFloat(0);
+            }
+            byte[] data = baos.toByteArray();
+            DatagramPacket packet = new DatagramPacket(
+                    data, data.length, clientUdpAddress, clientUdpPort);
+            udpSocket.send(packet);
         } catch (IOException e) {
             e.printStackTrace();
-            closeClient();
         }
-    }
-
-    private void sendStateSnapshot(DataOutputStream dos) throws IOException {
-        // Build snapshot from the server's authoritative state
-        // grab local player (host) and remote player (client)
-        // NB: you must ensure playing.getPlayer() returns host and you have remotePlayer object accessible
-        // For example: playing maintains player0 and player1.
-        dos.writeByte(NetworkProtocol.TYPE_STATE);
-        dos.writeLong(System.currentTimeMillis()); // server tick
-
-        // host (player 0)
-        float p0x = playing.getHostPlayer().getX();
-        float p0y = playing.getHostPlayer().getY();
-//        float p0vx = playing.getPlayer().getVx();
-//        float p0vy = playing.getPlayer().getVy();
-//        float p0health = playing.getHostPlayer().getHealth();
-        dos.writeFloat(p0x);
-        dos.writeFloat(p0y);
-        //dos.writeFloat(p0vx);
-        //dos.writeFloat(p0vy);
-//        dos.writeFloat(p0health);
-
-        // remote (player 1) - you will need a second player reference
-        // (if you store remote player in playing.getRemotePlayer())
-        if (playing.getRemotePlayer() != null) {
-            dos.writeFloat(playing.getRemotePlayer().getX());
-            dos.writeFloat(playing.getRemotePlayer().getY());
-            //dos.writeFloat(playing.getRemotePlayer().getVx());
-            //dos.writeFloat(playing.getRemotePlayer().getVy());
-//            dos.writeFloat(playing.getRemotePlayer().getHealth());
-        } else {
-            // send placeholders
-            dos.writeFloat(0);
-            dos.writeFloat(0);
-            //dos.writeFloat(0);
-            //dos.writeFloat(0);
-            dos.writeFloat(100);
-        }
-
-        dos.flush();
     }
 
     public void broadcastStageSelection(int stageIndex) {
-        if (clientSocket == null) return;
+        if (clientSocket == null) {
+            System.out.println("Stage broadcast - No clientSocket");
+            return;}
+        System.out.println("Stage broadcast - sending clientSocket");
         try {
              synchronized (dos) {
                  dos.writeByte(TYPE_STAGE_SELECT);
@@ -212,24 +254,29 @@ public class Server {
             e.printStackTrace();
         }
     }
-    private void checkStartGame() {
-        if (hostReady && clientReady) {
+
+    private void broadcastExit() {
+        synchronized (dos) {
             try {
-//                DataOutputStream dos = new DataOutputStream(
-//                        new BufferedOutputStream(clientSocket.getOutputStream()));
-                dos.writeByte(TYPE_START);
+                dos.writeByte(TYPE_EXIT);
                 dos.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            // Also change local Gamestate to PLAYING
-            game.getPlaying().getHostPlayer().setSpawn(game.getPlaying().getLevelManager().getCurrentStage().getPlayerSpawn());
-
-            game.getPlaying().getRemotePlayer().setSpawn(game.getPlaying().getLevelManager().getCurrentStage().getRemotePlayerSpawn());
-            game.getPlaying().getRemotePlayer().setFlipW(-1);
-            Gamestate.state = Gamestate.PLAYING;
         }
     }
+    public void sendExitToClients() {
+        synchronized (dos) {
+            try {
+                dos.writeByte(TYPE_EXIT);
+                dos.flush();
+                System.out.println("Server broadcast exit");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void closeClient() {
         try { if (clientSocket != null) clientSocket.close(); } catch (IOException ignored) {}
         clientSocket = null;
@@ -237,23 +284,59 @@ public class Server {
     }
     public void stop() {
         running.set(false);
+        if (udpSocket != null) udpSocket.close();
         try { if (serverSocket != null) serverSocket.close(); } catch (IOException ignored) {}
         if (announcer != null) announcer.shutdownNow();
         if (announceSocket != null) announceSocket.close();
         executor.shutdownNow();
     }
 
-    public void setHostReady_CheckStart(boolean ready) {
+    public void sendReady(boolean ready) {
         hostReady = ready;
+        if (dos != null) {
+            try {
+                synchronized (dos) {
+                    dos.writeByte(TYPE_READY);
+                    dos.writeBoolean(ready);
+                    dos.flush();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Server send ready");
         checkStartGame();
     }
     public void setClientReady(boolean ready) {
         clientReady = ready;
         checkStartGame();
     }
+    public void checkStartGame() {
+        System.out.println("Starting game - host : " + hostReady + "- client: " + clientReady);
+        if (hostReady && clientReady) {
+            try {
+                synchronized (dos){
+                    dos.writeByte(TYPE_START);
+                    dos.flush();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            game.getPlaying().resetAll();
+            // stvara instance igrača i prebacuje ekran na odabranu arenu
+            game.getPlaying().getHostPlayer().setSpawn(game.getPlaying().getLevelManager().getCurrentStage().getPlayerSpawn());
+            game.getPlaying().getRemotePlayer().setSpawn(game.getPlaying().getLevelManager().getCurrentStage().getRemotePlayerSpawn());
+            game.getPlaying().getRemotePlayer().setFlipW(-1);
+            Gamestate.state = Gamestate.PLAYING;
+        }
+    }
     public boolean getPlayersReady() {return hostReady && clientReady;}
     public void resetVariables() {
         hostReady = false;
         clientReady = false;
     }
+    public boolean isClientReady() {return clientReady;}
+    public boolean isHostReady() {return hostReady;}
+    public Socket getClientSocket() {return clientSocket;}
 }

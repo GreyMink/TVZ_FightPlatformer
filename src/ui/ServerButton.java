@@ -1,14 +1,20 @@
 package ui;
 
+import gamestates.Gamestate;
+import utils.LoadSave;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import static utils.Constants.UI.Buttons.*;
+
 public class ServerButton extends BasicButton implements UImethods{
 
-    private BufferedImage buttonImg;
+    private int xOffsetCenter = B_STONE_SERVER_WIDTH / 2;
+    private BufferedImage[] imgs;
     private final String serverName;
 
-    // buttonstate za stanja gumba - normal, pressed, hover
+    // buttonstate za stanja gumba - normal, pressed
     private int buttonState;
     private int selectIndex;
 
@@ -31,41 +37,25 @@ public class ServerButton extends BasicButton implements UImethods{
 
     @Override
     public void draw(Graphics g) {
-        if(buttonState == 0){
-            g.setColor(new Color(188, 86, 82));
-            g.drawRect(x, y, width, height);
-            g.fillRect(x, y, width, height);
+        g.drawImage(imgs[buttonState], x - xOffsetCenter, y, B_STONE_SERVER_WIDTH,B_STONE_SERVER_HEIGHT, null);
 
-            g.setColor(Color.YELLOW);
-            g.drawRect(x+10, y+10, width - 20, height - 20);
-            g.fillRect(x+10, y+10, width - 20, height - 20);
+        //Tekst u gumbu
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 25));
 
-            g.setColor(Color.BLUE);
-            g.setFont(new Font("Sans Serif", Font.BOLD, 25));
-            g.drawString(serverName, x+width-20, y+height-10);
+        int textX = (x - xOffsetCenter - xOffsetCenter/3) + B_STONE_SERVER_WIDTH / 2;
+        int textY = y + (B_STONE_SERVER_HEIGHT / 2);
 
-//            g.drawImage(buttonImg, x+10, y+10, width - 20, height - 20, null);
-        }
-        else if(buttonState == 1){
-            g.setColor(Color.LIGHT_GRAY);
-            g.drawRect(x, y, width, height);
-            g.fillRect(x, y, width, height);
-
-            g.setColor(Color.YELLOW);
-            g.drawRect(x+10, y+10, width - 20, height - 20);
-            g.fillRect(x+10, y+10, width - 20, height - 20);
-
-            g.setColor(Color.BLUE);
-            g.setFont(new Font("Sans Serif", Font.BOLD, 25));
-            g.drawString(serverName, x+width-20, y+height-10);
-
-//            g.drawImage(buttonImg, x+10, y+10, width - 20, height - 20, null);
-        }
+        g.drawString(serverName, textX, textY);
     }
 
     @Override
     public void loadButtonImgs() {
-
+        imgs = new BufferedImage[2];
+        BufferedImage temp = LoadSave.GetSpriteAtlas(LoadSave.SERVER_SELECT_BUTTON_STONE);
+        for(int i = 0; i < imgs.length;i++){
+            imgs[i] = temp.getSubimage(i * B_WIDTH_STONE_SERVER_DEFAULT, 0,B_WIDTH_STONE_SERVER_DEFAULT,B_HEIGHT_STONE_SERVER_DEFAULT);
+        }
     }
 
     public void reset(){
