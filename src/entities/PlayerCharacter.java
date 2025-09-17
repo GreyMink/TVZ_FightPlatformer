@@ -28,8 +28,8 @@ public enum PlayerCharacter {
             22,30,
             KNIGHT_SELECT,
             new AttackData[]{
-                    new AttackData("Knight Slash", AttackType.BASIC, 5, 2,4, 1,0, new Rectangle2D.Float(0,0,30,30),40,20),
-                    new AttackData("Knight Power Slash", AttackType.POWER, 15, 10, 2, 1, 1, new Rectangle2D.Float(0,0, 30,40), 30,40)
+                    new AttackData("Knight Slash", AttackType.BASIC, 5, 2,4, 1,0, new Rectangle2D.Float(0,0,40,40),40,0),
+                    new AttackData("Knight Power Slash", AttackType.POWER, 15, 10, 2, 1, 1, new Rectangle2D.Float(0,0, 50,30), 30,0)
             }),
     WEREWOLF(8,9,6,1,6,2,2,
             0,1,2,3,4,6,7,
@@ -60,7 +60,6 @@ public enum PlayerCharacter {
     final int xDrawOffset, yDrawOffset;
     int playerIndex;
     final String select_image;
-
     AttackData[] attackData;
 
     //Potencijalno izbaciti row varijable ako karakteri budu imali standardizirane stateove

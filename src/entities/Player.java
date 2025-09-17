@@ -290,20 +290,16 @@ public class Player extends Entity{
             healthPercent = 200;
         }
     }
-
     public void knockBack(float attackDirX, float attackDirY, float attackPower){
         // attackDirX/Y: unit direction vector ( 1,0 za desno)
         // attackPower: umnozak snagom napada
-
         float damage = getHealthPercent();
 
         // osnovni knockback
         //BASE_KNOCKBACK;     // minimum pixels per frame
         //KNOCKBACK_SCALING;           // knockback per % damage
-
         float knockback = (BASE_KNOCKBACK + damage * KNOCKBACK_SCALING) * attackPower;
 
-        // apply to velocity
         knockbackVelX = attackDirX * knockback;
         knockbackVelY = attackDirY * knockback;
 
