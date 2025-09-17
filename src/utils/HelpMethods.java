@@ -102,6 +102,12 @@ public class HelpMethods {
 
         int tile = lvlData[yIndex][xIndex];
 
+
+        Rectangle2D.Float testRect = new Rectangle2D.Float(x, y, 1, 1);
+        if (player.getPlaying().getObjectManager().isBlockedByActiveContainer(testRect)) {
+            return true;
+        }
+
         // prazan prostor
         if (tile == 11) return false;
         // normalan neprolazni tile

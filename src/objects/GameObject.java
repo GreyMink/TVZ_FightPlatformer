@@ -29,10 +29,9 @@ public class GameObject {
             aniIndex++;
             if(aniIndex >= GetSpriteAmount(objType)){
                 aniIndex = 0;
-                if(objType == BARREL){
-                    doAnimation = false;
-                    active = false;
-                }
+                doAnimation = false;
+                active = false;
+
             }
         }
     }
@@ -54,39 +53,14 @@ public class GameObject {
         g.drawRect((int) hitBox.x,(int) hitBox.y,(int) hitBox.width,(int) hitBox.height);
     }
 
-    public int getObjType() {
-        return objType;
-    }
+    public int getObjType() {return objType;}
+    public void setObjType(int objType) {this.objType = objType;}
 
-    public void setObjType(int objType) {
-        this.objType = objType;
-    }
-
-    public int getxDrawOffset() {
-        return xDrawOffset;
-    }
-
-    public int getyDrawOffset() {
-        return yDrawOffset;
-    }
-
-    public Rectangle2D.Float getHitBox() {
-        return hitBox;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean isActive){
-        this.active = isActive;
-    }
-
-    public int getAniIndex(){
-        return aniIndex;
-    }
-
-    public void setAnimation(boolean doAnimation) {
-        this.doAnimation = doAnimation;
-    }
+    public int getxDrawOffset() {return xDrawOffset;}
+    public int getyDrawOffset() {return yDrawOffset;}
+    public Rectangle2D.Float getHitBox() {return hitBox;}
+    public boolean isActive() {return active;}
+    public void setActive(boolean isActive){this.active = isActive;}
+    public int getAniIndex(){return aniIndex;}
+    public void setAnimation(boolean doAnimation) {this.doAnimation = doAnimation;}
 }

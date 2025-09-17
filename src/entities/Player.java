@@ -3,6 +3,7 @@ package entities;
 import entities.Attacks.*;
 import gamestates.Playing;
 import main.Game;
+import objects.GameContainer;
 import utils.LoadSave;
 
 import java.awt.*;
@@ -257,7 +258,6 @@ public class Player extends Entity{
 
     public void render(Graphics g){
         g.drawImage(animations[playerAction][aniIndex], (int)(hitBox.x - playerCharacter.xDrawOffset + flipX), (int)(hitBox.y - playerCharacter.yDrawOffset), width * flipW, height, null);
-        drawHitbox(g);
     }
 
     private void checkTrapCollision() {playing.checkTrapCollision(this);}
@@ -278,8 +278,10 @@ public class Player extends Entity{
             }
         }
 
-        playing.checkEnemyHit(attackBox);
-        playing.checkObjectHit(attackBox);
+        //ako se hitboxovi napada i kontejnera preklapaju postavlja doAnimation na true
+        playing.checkObjectHit(current.getHitbox());
+//        playing.checkEnemyHit(attackBox);
+//        playing.checkObjectHit(attackBox);
     }
 
     public void addDamage(int value) {

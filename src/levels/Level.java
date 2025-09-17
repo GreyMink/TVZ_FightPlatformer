@@ -17,7 +17,7 @@ public class Level {
     private final BufferedImage img;
     private int[][] lvlData;
 
-    private ArrayList<GameContainer> containers;
+    private ArrayList<GameContainer> containers= new ArrayList<>();
     private ArrayList<Spike> spikes = new ArrayList<>();
 
     private ArrayList<Point> spawnPoints;
@@ -48,7 +48,7 @@ public class Level {
 
                 loadLevelData(red, x, y);
                 loadEntities(green, x, y);
-                loadObjects(blue, x, y);
+//                loadObjects(blue, x, y);
             }
         }
 

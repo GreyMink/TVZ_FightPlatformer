@@ -117,6 +117,17 @@ public class ObjectManager {
         }
     }
 
+    public boolean isBlockedByActiveContainer(Rectangle2D.Float area) {
+        if (containers == null) return false;
+
+        for (GameContainer gc : containers) {
+            if (gc.isActive() && gc.getHitBox().intersects(area)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void checkTrapCollision(Player player){
         for(Spike s : spikes){
             if(s.getHitBox().intersects(player.getHitBox()) && !player.getInvincibility()){
@@ -155,5 +166,5 @@ public class ObjectManager {
 
         projectiles.add(new Projectile((int)player.getHitBox().x, (int)player.getHitBox().y, player.getLastMouseEvent().getX(),player.getLastMouseEvent().getY()));
     }
-
+    public ArrayList<GameContainer> getContainers() {return containers;}
 }

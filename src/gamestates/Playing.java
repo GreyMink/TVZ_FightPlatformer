@@ -121,6 +121,7 @@ public class Playing extends State implements StateMethods {
     }
     public void loadNextStage(){
         levelManager.loadNextStage();
+        objectManager.loadObjects(levelManager.getCurrentStage());
         hostPlayer.setSpawn(levelManager.getCurrentStage().getPlayerSpawn());
         if(remotePlayer != null){
             remotePlayer.setSpawn(levelManager.getCurrentStage().getRemotePlayerSpawn());
@@ -404,9 +405,6 @@ public class Playing extends State implements StateMethods {
     public void setMatchEnd(boolean matchEnd){this.matchEnd = matchEnd;}
     public void checkObjectHit(Rectangle2D.Float attackBox) {objectManager.checkObjectHit(attackBox);}
     public void checkTrapCollision(Player player) {objectManager.checkTrapCollision(player);}
-//    public void WindowFocusLost(){
-//        player.resetDirBooleans();
-//    }
     public void unpauseGame(){paused = false;}
 
     public ArrayList<Player> getAllPlayers() {
